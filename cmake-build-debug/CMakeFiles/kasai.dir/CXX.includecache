@@ -6,15 +6,65 @@
 
 #IncludeRegexTransform: 
 
+/Users/blair/CLionProjects/kasai/Primal.cpp
+Primal.h
+/Users/blair/CLionProjects/kasai/Primal.h
+
+/Users/blair/CLionProjects/kasai/Primal.h
+vector
+-
+string
+-
+map
+-
+Prototype.h
 /Users/blair/CLionProjects/kasai/Prototype.h
+
+/Users/blair/CLionProjects/kasai/Prototype.cpp
+Prototype.h
+/Users/blair/CLionProjects/kasai/Prototype.h
+
+/Users/blair/CLionProjects/kasai/Prototype.h
+boost/archive/binary_oarchive.hpp
+-
+boost/archive/binary_iarchive.hpp
+-
+
+/Users/blair/CLionProjects/kasai/Table.cpp
+Table.h
+/Users/blair/CLionProjects/kasai/Table.h
+
+/Users/blair/CLionProjects/kasai/Table.h
+vector
+-
+Prototype.h
+/Users/blair/CLionProjects/kasai/Prototype.h
+string_Prototype.h
+/Users/blair/CLionProjects/kasai/string_Prototype.h
+
+/Users/blair/CLionProjects/kasai/float_Prototype.cpp
+float_Prototype.h
+/Users/blair/CLionProjects/kasai/float_Prototype.h
 
 /Users/blair/CLionProjects/kasai/float_Prototype.h
 typed_Prototype.h
 /Users/blair/CLionProjects/kasai/typed_Prototype.h
 
+/Users/blair/CLionProjects/kasai/int_Prototype.cpp
+int_Prototype.h
+/Users/blair/CLionProjects/kasai/int_Prototype.h
+
 /Users/blair/CLionProjects/kasai/int_Prototype.h
 typed_Prototype.h
 /Users/blair/CLionProjects/kasai/typed_Prototype.h
+
+/Users/blair/CLionProjects/kasai/list.cpp
+list.h
+/Users/blair/CLionProjects/kasai/list.h
+
+/Users/blair/CLionProjects/kasai/list.h
+Table.h
+/Users/blair/CLionProjects/kasai/Table.h
 
 /Users/blair/CLionProjects/kasai/main.cpp
 iostream
@@ -32,9 +82,17 @@ float_Prototype.h
 int_Prototype.h
 /Users/blair/CLionProjects/kasai/int_Prototype.h
 
+/Users/blair/CLionProjects/kasai/string_Prototype.cpp
+string_Prototype.h
+/Users/blair/CLionProjects/kasai/string_Prototype.h
+
 /Users/blair/CLionProjects/kasai/string_Prototype.h
 string
 -
+typed_Prototype.h
+/Users/blair/CLionProjects/kasai/typed_Prototype.h
+
+/Users/blair/CLionProjects/kasai/typed_Prototype.cpp
 typed_Prototype.h
 /Users/blair/CLionProjects/kasai/typed_Prototype.h
 

@@ -221,17 +221,17 @@ CMakeFiles/kasai.dir/Table.cpp.s: cmake_force
 	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blair/CLionProjects/kasai/Table.cpp -o CMakeFiles/kasai.dir/Table.cpp.s
 
 CMakeFiles/kasai.dir/list.cpp.o: CMakeFiles/kasai.dir/flags.make
-CMakeFiles/kasai.dir/list.cpp.o: list.cpp
+CMakeFiles/kasai.dir/list.cpp.o: ../list.cpp
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/blair/CLionProjects/kasai/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/kasai.dir/list.cpp.o"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kasai.dir/list.cpp.o -c /Users/blair/CLionProjects/kasai/cmake-build-debug/list.cpp
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/kasai.dir/list.cpp.o -c /Users/blair/CLionProjects/kasai/list.cpp
 
 CMakeFiles/kasai.dir/list.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/kasai.dir/list.cpp.i"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/blair/CLionProjects/kasai/cmake-build-debug/list.cpp > CMakeFiles/kasai.dir/list.cpp.i
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/blair/CLionProjects/kasai/list.cpp > CMakeFiles/kasai.dir/list.cpp.i
 
 CMakeFiles/kasai.dir/list.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/kasai.dir/list.cpp.s"
-	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blair/CLionProjects/kasai/cmake-build-debug/list.cpp -o CMakeFiles/kasai.dir/list.cpp.s
+	/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/blair/CLionProjects/kasai/list.cpp -o CMakeFiles/kasai.dir/list.cpp.s
 
 # Object files for target kasai
 kasai_OBJECTS = \
@@ -264,6 +264,7 @@ kasai: CMakeFiles/kasai.dir/Pattern.cpp.o
 kasai: CMakeFiles/kasai.dir/Table.cpp.o
 kasai: CMakeFiles/kasai.dir/list.cpp.o
 kasai: CMakeFiles/kasai.dir/build.make
+kasai: /usr/local/lib/libboost_serialization-mt.dylib
 kasai: CMakeFiles/kasai.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/blair/CLionProjects/kasai/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable kasai"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/kasai.dir/link.txt --verbose=$(VERBOSE)

@@ -12,7 +12,7 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/Users/blair/CLionProjects/kasai/Tally.cpp" "/Users/blair/CLionProjects/kasai/cmake-build-debug/CMakeFiles/kasai.dir/Tally.cpp.o"
   "/Users/blair/CLionProjects/kasai/float_Prototype.cpp" "/Users/blair/CLionProjects/kasai/cmake-build-debug/CMakeFiles/kasai.dir/float_Prototype.cpp.o"
   "/Users/blair/CLionProjects/kasai/int_Prototype.cpp" "/Users/blair/CLionProjects/kasai/cmake-build-debug/CMakeFiles/kasai.dir/int_Prototype.cpp.o"
-  "/Users/blair/CLionProjects/kasai/cmake-build-debug/list.cpp" "/Users/blair/CLionProjects/kasai/cmake-build-debug/CMakeFiles/kasai.dir/list.cpp.o"
+  "/Users/blair/CLionProjects/kasai/list.cpp" "/Users/blair/CLionProjects/kasai/cmake-build-debug/CMakeFiles/kasai.dir/list.cpp.o"
   "/Users/blair/CLionProjects/kasai/main.cpp" "/Users/blair/CLionProjects/kasai/cmake-build-debug/CMakeFiles/kasai.dir/main.cpp.o"
   "/Users/blair/CLionProjects/kasai/string_Prototype.cpp" "/Users/blair/CLionProjects/kasai/cmake-build-debug/CMakeFiles/kasai.dir/string_Prototype.cpp.o"
   "/Users/blair/CLionProjects/kasai/typed_Prototype.cpp" "/Users/blair/CLionProjects/kasai/cmake-build-debug/CMakeFiles/kasai.dir/typed_Prototype.cpp.o"
@@ -21,6 +21,7 @@ set(CMAKE_CXX_COMPILER_ID "AppleClang")
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
+  "/usr/local/include"
   )
 
 # Targets to which this target links.
