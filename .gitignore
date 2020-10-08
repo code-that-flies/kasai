@@ -1,6 +1,5 @@
 CMakeLists.txt.user
 CMakeCache.txt
-CMakeFiles
 CMakeScripts
 Testing
 Makefile
@@ -11,6 +10,8 @@ CTestTestfile.cmake
 cmake-build-debug/CMakeFiles
 _deps
 
+# CMake
+cmake-build-*/
 # Prerequisites
 *.d
 
