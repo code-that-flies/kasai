@@ -23,23 +23,38 @@ void Substring::new_layer() {
     }
 }
 
+bool Substring::_push_back(int start, int end) {
+    if (end > this->end) {
+        if (isClip)
+            end = this->end;
+        else
+            return false;
+
+    }
+    auto result = new Substring(start, end);
+    substrings.push_back(result);
+    return true;
+}
+
 bool Substring::push_back(int start, int end) {
     auto result = new Substring(start, end);
 
     if (layer == 1) {
-        if (end > this->end) {
-            if (isClip)
-                end = this->end;
-            else
-                return false;
-
-        }
-        auto result = new Substring(start, end);
-        substrings.push_back(result);
-        return true;
+       _push_back(start, end);
     }
     else if (layer > 1) {
         for (auto val : substrings) {
+            if (!val->tags.empty()) {
+                if (val->Contains(start) || val->Contains(end)) {
+                    return false;
+                }
+                else {
+                    if (layer == 2) {
+                        _push_back(start, end);
+                    }
+                }
+            }
+
             if (val->Contains(start) && val->Contains(end)) {
                 if (val->end < end) {
                     if (isClip)
@@ -93,4 +108,13 @@ string Substring::_replace_all(string toReplaceWith, string *raw, int &prevSubst
 
 bool Substring::Contains(int index) {
     return index >= start && index <= end;
+}
+
+void Substring::AddTag(string tag) {
+    tags.push_back(tag);
+}
+
+void Substring::SetTag(string tag) {
+    if (tags.empty())
+        tags.push_back(tag);
 }

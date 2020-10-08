@@ -20,6 +20,7 @@ public:
     int end;
     int layer;
     vector<Substring*> substrings;
+    vector<string> tags;
     static const bool isClip = false;
 
     Substring(int start, int end);
@@ -28,6 +29,7 @@ public:
 
     void new_layer();
 
+    bool _push_back(int start, int end);
     bool push_back(int start, int end);
 
     void render(vector<string> * result, string * raw);
@@ -35,6 +37,10 @@ public:
     string _replace_all(string toReplaceWith, string * raw, int& prevSubstringEnd);
 
     bool Contains(int index);
+
+    void AddTag(string tag);
+
+    void SetTag(string tag);
 };
 
 

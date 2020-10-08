@@ -4,9 +4,10 @@
 
 #include "Pattern.h"
 
-Pattern::Query::Query(bool startFromBeginning, bool inheritStartCursor) {
-    this->startFromBeginning = startFromBeginning;
-    this->inheritStartCursor = inheritStartCursor;
+Pattern::Query::Query(bool startFromBeginning, bool inheritStartCursor, string _tag)
+: tag(_tag),
+startFromBeginning(startFromBeginning),
+inheritStartCursor(inheritStartCursor) {
 }
 
 bool Pattern::Query::Match(string *raw, int cursor, int limit) {
@@ -316,8 +317,14 @@ Pattern::~Pattern() {
     }
 }
 
-Substring *Pattern::add_substring(int start, int end) {
+Substring *Pattern::add_substring(int start, int end, string tag="") {
     for (auto val : *this) {
+        if (!val->tags.empty()) {
+            if (val->Contains(start) || val->Contains(end)) {
+                return nullptr;
+            }
+        }
+
         if (val->Contains(start) && val->Contains(end)) {
             bool success = val->push_back(start, end);
             if (val->substrings.empty())
@@ -325,6 +332,8 @@ Substring *Pattern::add_substring(int start, int end) {
             if (success) {
                 if ( layer > (tally.size() - 1) )
                     tally.push_back(0);
+                if (tag != "")
+                    val->SetTag(tag);
 
                 tally[layer]++;
             }
@@ -332,7 +341,7 @@ Substring *Pattern::add_substring(int start, int end) {
         }
     }
     if (layer == 0) {
-        if ( layer > (tally.size() - 1) )
+        if ( layer > (tally.size() - 1))
             tally.push_back(0);
         tally[layer]++;
 
@@ -659,7 +668,7 @@ bool Pattern::FindAllWords(Pattern::Query query) {
                 auto isMatch = query.Match(raw, prevStart, index - prevStart);
 
                 if (isMatch)
-                    add_substring(prevStart,  index);
+                    add_substring(prevStart,  index, query.tag);
             }
 
             hasFound = true;
@@ -678,7 +687,7 @@ bool Pattern::FindAllWords(Pattern::Query query) {
         auto isMatch = query.Match(raw, prevStart, raw->size() - prevStart);
 
         if (isMatch)
-            add_substring(prevStart, raw->size());
+            add_substring(prevStart, raw->size(), query.tag);
     }
 
     new_layer();
@@ -693,7 +702,7 @@ bool Pattern::FindAll(Pattern::Query &query, int limit) {
         bool success = query.Match(raw, index, limit, endPos);
 
         if (success) {
-            add_substring(index, endPos - 1);
+            add_substring(index, endPos - 1, query.tag);
 
             index = endPos;
             hasFound = true;
@@ -726,4 +735,8 @@ Pattern Pattern::FromFindAll(string *raw, Pattern::Query &query, int limit) {
     result.FindAll(query, limit);
 
     return result;
+}
+
+bool Pattern::MatchAll(int cursor, string query, string *raw, int iteration, bool inverted) {
+    return !inverted;
 }

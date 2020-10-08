@@ -14,6 +14,8 @@ using std::string;
 class string_Prototype : public typed_Prototype<string> {
 public:
     void load(string raw) override;
+
+    string to_string(int indentation) override;
 };
 
 

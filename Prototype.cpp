@@ -3,3 +3,7 @@
 //
 
 #include "Prototype.h"
+
+string Prototype::to_string(int indentation) {
+    return "";
+}

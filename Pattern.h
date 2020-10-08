@@ -32,8 +32,9 @@ public:
         bool startFromBeginning;
         // Allows you to choose whether or not to inherit the starting position of the parent query in the duplicates
         bool inheritStartCursor;
+        string tag;
 
-        Query(bool startFromBeginning = true, bool inheritStartCursor = false);
+        Query(bool startFromBeginning = true, bool inheritStartCursor = false, string _tag="");
 
         bool Match(string* raw, int cursor, int limit);
 
@@ -62,7 +63,7 @@ public:
         return tally[tally.size() - 1];
     }
 
-    Substring * add_substring(int start, int end);
+    Substring * add_substring(int start, int end, string tag);
 
     void new_layer();
 
@@ -77,6 +78,9 @@ public:
     static bool MatchLowerCase(int cursor, string query, string* raw, int iteration, bool inverted);
 
     static bool MatchValue(int cursor, string query, string* raw, int iteration, bool inverted);
+
+
+    static bool MatchAll(int cursor, string query, string* raw, int iteration, bool inverted);
 
 
     static bool MatchWhitespace(int cursor, string query, string* raw, int iteration, bool inverted);
