@@ -690,7 +690,8 @@ bool Pattern::FindAllWords(Pattern::Query query) {
             add_substring(prevStart, raw->size(), query.tag);
     }
 
-    new_layer();
+    if (query.tag == "")
+        new_layer();
     return hasFound;
 }
 
@@ -709,7 +710,8 @@ bool Pattern::FindAll(Pattern::Query &query, int limit) {
         }
     }
 
-    new_layer();
+    if (query.tag == "")
+        new_layer();
     return hasFound;
 }
 
@@ -739,4 +741,21 @@ Pattern Pattern::FromFindAll(string *raw, Pattern::Query &query, int limit) {
 
 bool Pattern::MatchAll(int cursor, string query, string *raw, int iteration, bool inverted) {
     return !inverted;
+}
+
+vector<string> Pattern::render_substrings(string tag) {
+
+    if (tag == "") {
+        return render_substrings();
+    }
+    else {
+        auto result = vector<string>();
+
+        for (Substring *substring : *this) {
+            substring->render(&result, raw, tag);
+        }
+
+        return result;
+    }
+
 }

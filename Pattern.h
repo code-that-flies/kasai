@@ -71,6 +71,8 @@ public:
 
     vector<string> render_substrings();
 
+    vector<string> render_substrings(string tag);
+
     string replace_all(string toReplaceWith);
 
     static bool MatchUpperCase(int cursor, string query, string* raw, bool inverted);

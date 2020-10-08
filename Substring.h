@@ -32,11 +32,13 @@ public:
     bool _push_back(int start, int end);
     bool push_back(int start, int end);
 
-    void render(vector<string> * result, string * raw);
+    void render(vector<string> * result, string * raw, string tag = "");
 
     string _replace_all(string toReplaceWith, string * raw, int& prevSubstringEnd);
 
     bool Contains(int index);
+
+    string GetTag(int index=0);
 
     void AddTag(string tag);
 

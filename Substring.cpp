@@ -48,11 +48,6 @@ bool Substring::push_back(int start, int end) {
                 if (val->Contains(start) || val->Contains(end)) {
                     return false;
                 }
-                else {
-                    if (layer == 2) {
-                        _push_back(start, end);
-                    }
-                }
             }
 
             if (val->Contains(start) && val->Contains(end)) {
@@ -73,13 +68,23 @@ bool Substring::push_back(int start, int end) {
     return false;
 }
 
-void Substring::render(vector<string> *result, string *raw) {
-    for (Substring* substring : substrings) {
-        substring->render(result, raw);
-    }
+void Substring::render(vector<string> *result, string *raw, string tag) {
+    if (tag != "") {
+        for (Substring* substring : substrings) {
+            substring->render(result, raw);
+        }
 
-    if (substrings.empty() && layer < 2)
-        result->push_back(raw->substr(start, end - start));
+        if (substrings.empty() && layer < 2 && GetTag() == tag)
+            result->push_back(raw->substr(start, end - start));
+    }
+    else {
+        for (Substring* substring : substrings) {
+            substring->render(result, raw);
+        }
+
+        if (substrings.empty() && layer < 2 && GetTag() == tag)
+            result->push_back(raw->substr(start, end - start));
+    }
 }
 
 string Substring::_replace_all(string toReplaceWith, string *raw, int &prevSubstringEnd) {
@@ -117,4 +122,12 @@ void Substring::AddTag(string tag) {
 void Substring::SetTag(string tag) {
     if (tags.empty())
         tags.push_back(tag);
+}
+
+string Substring::GetTag(int index) {
+    if (tags.empty())
+        return "";
+    else {
+        return tags[index];
+    }
 }
