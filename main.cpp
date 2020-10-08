@@ -113,9 +113,9 @@ int main() {
 
 
 int main() {
-    Pattern::Query q = Pattern::Query(true, false, "Egg");
+    Pattern::Query q = Pattern::Query("Egg", true, false);
     q.push_back(Pattern::MatchValue, "q", false, 4);
-    Pattern::Query q2;
+    Pattern::Query q2 = Pattern::Query("", true, false, false);
     q2.push_back(Pattern::MatchValue, "T", false, 1);
     q.PEEK_query(3, &q2);
 

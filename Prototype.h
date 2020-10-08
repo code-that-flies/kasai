@@ -8,6 +8,8 @@
 #include <string>
 #include <map>
 
+#include "Table.h"
+
 using std::string;
 using std::map;
 
@@ -18,7 +20,9 @@ public:
     //virtual void Update() = 0;
    // virtual void FillWithDefaults() = 0;
 //   virtual bool Serialize() = 0;
-    map<string, Prototype*> * subvalues = NULL;
+
+    Table::Column * subvalues_col = NULL;
+    map<string, Prototype*> * subvalues_map  = NULL;
 
     virtual string to_string(int indentation);;
 };

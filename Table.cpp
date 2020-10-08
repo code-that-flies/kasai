@@ -3,3 +3,9 @@
 //
 
 #include "Table.h"
+#include "Prototype.h"
+
+// TODO
+void Table::Add(string name, Prototype defaultValue) {
+
+}

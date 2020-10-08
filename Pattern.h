@@ -30,13 +30,17 @@ public:
         vector<bool> invertednesses;
         map<int, Query*> duplicates;
         map<int, Query*> peeks;
+        vector<string> valid_prefixes;
+        vector<char> valid_prefix_characters;
+        string INNER_OR;
         map<int, int> amounts;
+        bool prioritizePeeks;
         bool startFromBeginning;
         // Allows you to choose whether or not to inherit the starting position of the parent query in the duplicates
         bool inheritStartCursor;
         string tag;
 
-        Query(bool startFromBeginning = true, bool inheritStartCursor = false, string _tag="");
+        Query(string _tag, bool startFromBeginning = true, bool inheritStartCursor = false, bool prioritizePeeks = false );
 
         bool Match(string* raw, int cursor, int limit);
 

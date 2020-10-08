@@ -5,22 +5,20 @@
 #ifndef KASAI_TABLE_H
 #define KASAI_TABLE_H
 #include <vector>
-
-#include "Prototype.h"
-#include "string_Prototype.h"
+#include <string>
 
 using std::vector;
+using std::string;
 
-class Table : string_Prototype {
+class Prototype;
+class Table {
 public:
-    class Column : public typed_Prototype<vector<Prototype*>> {
+    class Column : public vector<Prototype*> {
 
     };
 
     // TODO
-    void Add(string name, Prototype defaultValue) {
-
-    }
+    void Add(string name, Prototype defaultValue);
 
     // TODO
     void Add(string name) {

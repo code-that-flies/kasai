@@ -4,16 +4,42 @@
 
 #include "Pattern.h"
 
-Pattern::Query::Query(bool startFromBeginning, bool inheritStartCursor, string _tag)
+Pattern::Query::Query(string _tag, bool startFromBeginning, bool inheritStartCursor, bool prioritizePeeks)
 : tag(_tag),
 startFromBeginning(startFromBeginning),
-inheritStartCursor(inheritStartCursor) {
+inheritStartCursor(inheritStartCursor),
+prioritizePeeks(prioritizePeeks),
+INNER_OR("") {
 }
 
 bool Pattern::Query::Match(string *raw, int cursor, int limit) {
     int offset = 0;
 
     bool result = false;
+
+    bool prefix_result = false;
+    if (!valid_prefixes.empty()) {
+        for (auto& prefix : valid_prefixes) {
+            if (cursor > prefix.size()) {
+                if (raw->substr(cursor - prefix.size(), prefix.size())== prefix ) {
+                    prefix_result = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!valid_prefix_characters.empty() && cursor > 0) {
+        for (auto& prefix : valid_prefix_characters) {
+            if (prefix == (*raw)[cursor - 1]) {
+                prefix_result = true;
+                break;
+            }
+        }
+    }
+
+    if (!prefix_result && (!valid_prefix_characters.empty() || !valid_prefixes.empty()))
+        return false;
 
 
     if (startFromBeginning) {
@@ -45,8 +71,25 @@ bool Pattern::Query::Match(string *raw, int cursor, int limit) {
                     while( (offset + index) < limit) {
                         result = (*matches[index])(index + cursor + offset, queries[index], raw, 1, invertednesses[index]);
 
-                        if (!result)
-                            break;
+
+                        if (!result) {
+                            for (int i = 0; i < INNER_OR.size(); i++) {
+                                result = (*matches[index])(index + cursor + offset, INNER_OR, raw, i, invertednesses[index]);
+
+                                if (result)
+                                    break;
+                            }
+
+                            if (!result)
+                                break;
+                        }
+                        if (prioritizePeeks) {
+                            if (peeks.find(-1) != peeks.end()) {
+                                if (peeks[-1]->Match(raw, index + cursor + offset, peeks[-1]->matches.size())) {
+                                    return true;
+                                }
+                            }
+                        }
 
                         offset++;
                     }
@@ -54,6 +97,15 @@ bool Pattern::Query::Match(string *raw, int cursor, int limit) {
                 else {
                     for (int i = 0; ((index + offset) < limit) && offset < amounts[index]; offset++) {
                         result = (*matches[index])(index + cursor + offset, queries[index], raw, 1, invertednesses[index]);
+
+                        if (!result) {
+                            for (int i = 0; i < INNER_OR.size(); i++) {
+                                result = (*matches[index])(index + cursor + offset, INNER_OR, raw, i, invertednesses[index]);
+
+                                if (result)
+                                    break;
+                            }
+                        }
 
                         if (!result)
                             return false;
@@ -106,8 +158,26 @@ bool Pattern::Query::Match(string *raw, int cursor, int limit) {
                     while( (offset + index) < limit) {
                         result = (*matches[index])(limit - matches.size() + index - 1 + cursor + offset, queries[index], raw, 1, invertednesses[index]);
 
-                        if (!result)
-                            break;
+                        if (!result) {
+                            for (int i = 0; i < INNER_OR.size(); i++) {
+                                result = (*matches[index])(limit - matches.size() + index - 1 + cursor + offset, INNER_OR, raw, i, invertednesses[index]);
+
+                                if (result)
+                                    break;
+                            }
+
+                            if (!result)
+                                break;
+                        }
+
+
+                        if (prioritizePeeks) {
+                            if (peeks.find(-1) != peeks.end()) {
+                                if (peeks[-1]->Match(raw, limit - matches.size() + index - 1 + cursor + offset, peeks[-1]->matches.size())) {
+                                    return true;
+                                }
+                            }
+                        }
 
                         offset++;
                     }
@@ -115,6 +185,16 @@ bool Pattern::Query::Match(string *raw, int cursor, int limit) {
                 else {
                     for (int i = 0; ((index + offset) < limit) && offset < amounts[index]; offset++) {
                         result = (*matches[index])(limit - matches.size() + index - 1 + cursor + offset, queries[index], raw, 1, invertednesses[index]);
+
+
+                        if (!result) {
+                            for (int i = 0; i < INNER_OR.size(); i++) {
+                                result = (*matches[index])(limit - matches.size() + index - 1 + cursor + offset, INNER_OR, raw, i, invertednesses[index]);
+
+                                if (result)
+                                    break;
+                            }
+                        }
 
                         if (!result)
                             return false;
@@ -180,8 +260,24 @@ bool Pattern::Query::Match(string *raw, int cursor, int limit, int &resultEndCur
                     while( (offset + index) < limit) {
                         result = (*matches[index])(index + cursor + offset, queries[index], raw, 1, invertednesses[index]);
 
-                        if (!result)
-                            break;
+                        if (!result) {
+                            for (int i = 0; i < INNER_OR.size(); i++) {
+                                result = (*matches[index])(index + cursor + offset, INNER_OR, raw, i, invertednesses[index]);
+
+                                if (result)
+                                    break;
+                            }
+
+                            if (!result)
+                                break;
+                        }
+                        if (prioritizePeeks) {
+                            if (peeks.find(-1) != peeks.end()) {
+                                if (peeks[-1]->Match(raw, index + cursor + offset, peeks[-1]->matches.size())) {
+                                    return true;
+                                }
+                            }
+                        }
 
                         offset++;
                     }
@@ -189,6 +285,15 @@ bool Pattern::Query::Match(string *raw, int cursor, int limit, int &resultEndCur
                 else {
                     for (int i = 0; ((index + offset) < limit) && offset < amounts[index]; offset++) {
                         result = (*matches[index])(index + cursor + offset, queries[index], raw, 1, invertednesses[index]);
+
+                        if (!result) {
+                            for (int i = 0; i < INNER_OR.size(); i++) {
+                                result = (*matches[index])(index + cursor + offset, INNER_OR, raw, i, invertednesses[index]);
+
+                                if (result)
+                                    break;
+                            }
+                        }
 
                         if (!result)
                             return false;
@@ -240,8 +345,24 @@ bool Pattern::Query::Match(string *raw, int cursor, int limit, int &resultEndCur
                     while( (offset + index) < limit) {
                         result = (*matches[index])(limit - matches.size() + index - 1 + cursor + offset, queries[index], raw, 1, invertednesses[index]);
 
-                        if (!result)
-                            break;
+                        if (!result) {
+                            for (int i = 0; i < INNER_OR.size(); i++) {
+                                result = (*matches[index])(limit - matches.size() + index - 1 + cursor + offset, INNER_OR, raw, i, invertednesses[index]);
+
+                                if (result)
+                                    break;
+                            }
+
+                            if (!result)
+                                break;
+                        }
+                        if (prioritizePeeks) {
+                            if (peeks.find(-1) != peeks.end()) {
+                                if (peeks[-1]->Match(raw, limit - matches.size() + index - 1 + cursor + offset, peeks[-1]->matches.size())) {
+                                    return true;
+                                }
+                            }
+                        }
 
                         offset++;
                     }
@@ -249,6 +370,15 @@ bool Pattern::Query::Match(string *raw, int cursor, int limit, int &resultEndCur
                 else {
                     for (int i = 0; ((index + offset) < limit) && offset < amounts[index]; offset++) {
                         result = (*matches[index])(limit - matches.size() + index - 1 + cursor + offset, queries[index], raw, 1, invertednesses[index]);
+
+                        if (!result) {
+                            for (int i = 0; i < INNER_OR.size(); i++) {
+                                result = (*matches[index])(limit - matches.size() + index - 1 + cursor + offset, INNER_OR, raw, i, invertednesses[index]);
+
+                                if (result)
+                                    break;
+                            }
+                        }
 
 
                         if (!result)
