@@ -9,12 +9,14 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <utility>
 
 #include "Substring.h"
 
 using std::string;
 using std::vector;
 using std::map;
+using std::pair;
 
 typedef bool (*Filter)(int, string, string*, int, bool);
 class Pattern : public vector<Substring*> {
@@ -70,6 +72,8 @@ public:
 
 
     vector<string> render_substrings();
+
+    vector<pair<string, string>> render_substrings_with_tags();
 
     vector<string> render_substrings(string tag);
 

@@ -23,7 +23,7 @@ void Substring::new_layer() {
     }
 }
 
-bool Substring::_push_back(int start, int end) {
+bool Substring::_push_back(int start, int end, string tag) {
     if (end > this->end) {
         if (isClip)
             end = this->end;
@@ -33,14 +33,15 @@ bool Substring::_push_back(int start, int end) {
     }
     auto result = new Substring(start, end);
     substrings.push_back(result);
+    SetTag(tag);
     return true;
 }
 
-bool Substring::push_back(int start, int end) {
+bool Substring::push_back(int start, int end, string tag) {
     auto result = new Substring(start, end);
 
     if (layer == 1) {
-       _push_back(start, end);
+       _push_back(start, end, tag);
     }
     else if (layer > 1) {
         for (auto val : substrings) {
@@ -120,7 +121,7 @@ void Substring::AddTag(string tag) {
 }
 
 void Substring::SetTag(string tag) {
-    if (tags.empty())
+    if (tags.empty() && tag != "")
         tags.push_back(tag);
 }
 
@@ -129,5 +130,17 @@ string Substring::GetTag(int index) {
         return "";
     else {
         return tags[index];
+    }
+}
+
+void Substring::render_with_tags(vector<pair<string, string>> *result, string *raw) {
+    for (Substring* substring : substrings) {
+        substring->render_with_tags(result, raw);
+    }
+
+    auto tag = GetTag();
+    if (tag != "") {
+        if (substrings.empty() && layer < 2)
+            result->push_back(pair(tag, raw->substr(start, end - start)));
     }
 }

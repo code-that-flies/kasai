@@ -9,10 +9,12 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <utility>
 
 using std::string;
 using std::vector;
 using std::map;
+using std::pair;
 
 class Substring {
 public:
@@ -29,10 +31,12 @@ public:
 
     void new_layer();
 
-    bool _push_back(int start, int end);
-    bool push_back(int start, int end);
+    bool _push_back(int start, int end, string tag = "");
+    bool push_back(int start, int end, string tag = "");
 
     void render(vector<string> * result, string * raw, string tag = "");
+
+    void render_with_tags(vector<pair<string, string>> * result, string * raw);
 
     string _replace_all(string toReplaceWith, string * raw, int& prevSubstringEnd);
 

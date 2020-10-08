@@ -326,14 +326,12 @@ Substring *Pattern::add_substring(int start, int end, string tag="") {
         }
 
         if (val->Contains(start) && val->Contains(end)) {
-            bool success = val->push_back(start, end);
+            bool success = val->push_back(start, end, tag);
             if (val->substrings.empty())
                 return val;
             if (success) {
                 if ( layer > (tally.size() - 1) )
                     tally.push_back(0);
-                if (tag != "")
-                    val->SetTag(tag);
 
                 tally[layer]++;
             }
@@ -346,6 +344,7 @@ Substring *Pattern::add_substring(int start, int end, string tag="") {
         tally[layer]++;
 
         auto result2 = new Substring(start, end);
+        result2->SetTag(tag);
         this->push_back(result2);
 
         return result2;
@@ -758,4 +757,14 @@ vector<string> Pattern::render_substrings(string tag) {
         return result;
     }
 
+}
+
+vector<pair<string, string>> Pattern::render_substrings_with_tags() {
+    auto result = vector<pair<string, string>>();
+
+    for (Substring *substring : *this) {
+        substring->render_with_tags(&result, raw);
+    }
+
+    return result;
 }

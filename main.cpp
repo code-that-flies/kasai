@@ -5,6 +5,7 @@
 #include "string_Prototype.h"
 #include "float_Prototype.h"
 #include "int_Prototype.h"
+#include "Pattern.h"
 
 using std::string;
 using std::vector;
@@ -90,6 +91,7 @@ Prototype * load(string raw) {
         }
     }
 }
+/*
 
 int main() {
     std::cout << "Hello, World!" << std::endl;
@@ -105,5 +107,34 @@ int main() {
     std::cout << std::to_string(((float_Prototype*)value)->value) << std::endl;
 
     delete value;
+    return 0;
+}
+*/
+
+
+int main() {
+    Pattern::Query q = Pattern::Query(true, false, "Egg");
+    q.push_back(Pattern::MatchValue, "q", false, 4);
+    Pattern::Query q2;
+    q2.push_back(Pattern::MatchValue, "T", false, 1);
+    q.PEEK_query(3, &q2);
+
+    auto val2 = new string("qqqq   T");    // test data incoming
+    Pattern val = Pattern::FromFindAll(val2, q, 4);
+    // val.FindAll("qqq", false, false);
+    std::cout << val.replace_all("BOOM!");
+
+
+    //  std::cout << *val2;
+    //  std::cout << std::endl << std::to_®string(Pattern::Tally(*val2).Get("Tab") )<< std::endl;
+
+
+    for (auto result : val.render_substrings_with_tags()) {
+        std::cout << std::endl << result.first << "\t\t" << result.second;   // results
+    }
+
+    std::cout << std::endl << val.tally_substrings();
+
+    delete val2;
     return 0;
 }
