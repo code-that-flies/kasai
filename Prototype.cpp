@@ -205,6 +205,16 @@ Prototype Prototype::search(Prototype &query) {
     if (query.subvalues_col != nullptr) {
         for (auto* val : *(query.subvalues_col))
 
-            // USer val->comparison to and val->type to search() for the value
+            // Use val->comparison to and val->type to search() for the value
+
+            // Search [#person brother: [name: "Ryan"]]
+            // Search(person).has(brother: { name: "Ryan" })
+
+            // def has(prototype):
+            //     for each property in prototype, if no match in this return false
+            //     for each property match in prototype
+            //          if not match.has(property) return false
+            //     default: return true
+
     }
 }
