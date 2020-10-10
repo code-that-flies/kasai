@@ -44,7 +44,6 @@ public:
 
         bool Match(string* raw, int cursor, int limit);
 
-
         bool Match(string* raw, int cursor, int limit, int& resultEndCursor);
 
         void OR_query(int index, Query* query);
