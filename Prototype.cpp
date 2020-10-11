@@ -107,16 +107,16 @@ Prototype Prototype::search(string name, ETYPE type, Comparator comparison) {
     result.initialize_col();
     if (this->subvalues_map != NULL) {
         for( auto const& [index, prototype] : *subvalues_map ) {
-            result.merge(*prototype->search(name, type).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+            result.merge(*prototype->search(name, type, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
     if (this->subvalues_col != NULL) {
         for( auto const& prototype : *subvalues_col ) {
-            result.merge(*prototype->search(name, type).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+            result.merge(*prototype->search(name, type, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
 
-    result.merge(*_search(name, type)->subvalues_col);
+    result.merge(*_search(name, type, comparison)->subvalues_col);
 
 
     return result;
@@ -129,16 +129,16 @@ Prototype Prototype::search(string name, int value, Comparator comparison) {
     result.initialize_col();
     if (this->subvalues_map != NULL) {
         for( auto const& [index, prototype] : *subvalues_map ) {
-            result.merge(*prototype->search(name, type).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+            result.merge(*prototype->search(name, value, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
     if (this->subvalues_col != NULL) {
         for( auto const& prototype : *subvalues_col ) {
-            result.merge(*prototype->search(name, type).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+            result.merge(*prototype->search(name, value, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
 
-    result.merge(*_search(name, type)->subvalues_col);
+    result.merge(*_search(name, value, comparison)->subvalues_col);
 
 
     return result;
@@ -148,16 +148,16 @@ Prototype Prototype::search(string name, float value, Comparator comparison) {
     result.initialize_col();
     if (this->subvalues_map != NULL) {
         for( auto const& [index, prototype] : *subvalues_map ) {
-            result.merge(*prototype->search(name, value).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+            result.merge(*prototype->search(name, value, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
     if (this->subvalues_col != NULL) {
         for( auto const& prototype : *subvalues_col ) {
-            result.merge(*prototype->search(name, value).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+            result.merge(*prototype->search(name, value, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
 
-    result.merge(*_search(name, value)->subvalues_col);
+    result.merge(*_search(name, value, comparison)->subvalues_col);
 
 
     return result;
@@ -170,16 +170,16 @@ Prototype Prototype::search(string name, string value, Comparator comparison) {
     result.initialize_col();
     if (this->subvalues_map != NULL) {
         for( auto const& [index, prototype] : *subvalues_map ) {
-            result.merge(*prototype->search(name, type).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+            result.merge(*prototype->search(name, value, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
     if (this->subvalues_col != NULL) {
         for( auto const& prototype : *subvalues_col ) {
-            result.merge(*prototype->search(name, type).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+            result.merge(*prototype->search(name, value, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
 
-    result.merge(*_search(name, type)->subvalues_col);
+    result.merge(*_search(name, value, comparison)->subvalues_col);
 
 
     return result;
@@ -203,18 +203,70 @@ void Prototype::merge(Table::Column& val) {
 
 Prototype Prototype::search(Prototype &query) {
     if (query.subvalues_col != nullptr) {
-        for (auto* val : *(query.subvalues_col))
+        for (auto *val : *(query.subvalues_col)) {
 
-            // Use val->comparison to and val->type to search() for the value
 
-            // Search [#person brother: [name: "Ryan"]]
-            // Search(person).has(brother: { name: "Ryan" })
+        // Use val->comparison to and val->type to search() for the value
 
-            // def has(prototype):
-            //     for each property in prototype, if no match in this return false
-            //     for each property match in prototype
-            //          if not match.has(property) return false
-            //     default: return true
+        // Search [#person brother: [name: "Ryan"]]
+        // Search(person).foreach.has(brother: { name: "Ryan" })
+
+        // people = search(person)
+        // foreach(person):
+        //          append person to result if person.has:
+        //              brother:
+        //                  name: "Ryan"
 
     }
+
+    }
+}
+
+// TODO: rigorously test the has function
+bool Prototype::has(Prototype *query) {
+    // def has(prototype):
+    //     for each property in prototype, if no match in this return false
+    //     for each property match in prototype
+    //          if not match.has(property) return false
+    //     default: return true
+
+
+    if (this->subvalues_map != NULL) {
+        for (auto const&[name, prototype] : *query->subvalues_map) {
+            if (!_has(name, prototype, *prototype->comparison)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+
+bool Prototype::_has(string query_name, Prototype *query, Comparator comparison) {
+    if(subvalues_map->find(query_name) != subvalues_map->end()) {
+        auto* subprototype = (*subvalues_map)[query_name];
+
+        if (query->etype != ETYPE::NONE) {
+            if (query->etype == subprototype->etype) {
+                if (comparison(query, subprototype)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+
+        if (query->subvalues_map != nullptr && subprototype->subvalues_map != nullptr) {
+            for (auto const&[name, query_subprototype] : *query->subvalues_map) {
+                if (subprototype->_has(name, query_subprototype, *query_subprototype->comparison)) {
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+    }
+
 }

@@ -52,13 +52,19 @@ public:
     Prototype* _search(string name, float value, Comparator comparison);
     Prototype* _search(string name, string value, Comparator comparison);
 
-    Prototype search(string name, ETYPE type);
+    Prototype search(string name, ETYPE type, Comparator comparison);
+    Prototype search(string name, int value, Comparator comparison);
+    Prototype search(string name, float value, Comparator comparison);
+    Prototype search(string name, string value, Comparator comparison);
 
     Prototype search(Prototype& query);
 
     Prototype* Get();
     Prototype* Get(int index);
     Prototype* Get(string key);
+
+    bool _has(string name,  Prototype* prototype, Comparator comparison);
+    bool has(Prototype* prototype);
 
     virtual string to_string(int indentation);
 
