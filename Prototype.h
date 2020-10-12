@@ -32,6 +32,7 @@ public:
    // virtual void FillWithDefaults() = 0;
 //   virtual bool Serialize() = 0;
     ETYPE etype;
+    unsigned int identity;
 
     Prototype* parent = NULL;
     Table::Column * subvalues_col = nullptr;
@@ -52,23 +53,31 @@ public:
     Prototype* _search(string name, float value, Comparator comparison);
     Prototype* _search(string name, string value, Comparator comparison);
 
+    Prototype* _search(string tag);
+
+
     Prototype search(string name, ETYPE type, Comparator comparison);
     Prototype search(string name, int value, Comparator comparison);
     Prototype search(string name, float value, Comparator comparison);
     Prototype search(string name, string value, Comparator comparison);
 
     Prototype search(Prototype& query);
+    Prototype search(string tag);
+
+    bool has_tag(string tag);
+    Prototype& tag(string);
 
     Prototype* Get();
     Prototype* Get(int index);
     Prototype* Get(string key);
-
+    Prototype stag(string);
     bool _has(string name,  Prototype* prototype, Comparator comparison);
     bool has(Prototype* prototype);
 
     virtual string to_string(int indentation);
 
     void initialize_col();
+    void initialize_map();
 };
 
 
