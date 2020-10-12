@@ -33,7 +33,7 @@ struct isValue
     }
 };
 
-unsigned int Prototype::IDENTITY = 0;
+unsigned int Prototype::IDENTITY = 0; // TESTING NEW USERNAME
 
 Prototype::Prototype() {
     IDENTITY++;
