@@ -33,6 +33,13 @@ struct isValue
     }
 };
 
+unsigned int Prototype::IDENTITY = 0;
+
+Prototype::Prototype() {
+    IDENTITY++;
+    this->identity = IDENTITY;
+}
+
 string Prototype::to_string(int indentation) {
     return "";
 }
@@ -237,11 +244,94 @@ void Prototype::initialize_col() {
 
 }
 
+void Prototype::_merge(map<string, Prototype*>& val) {
+
+}
+
+void Prototype::_merge_subprototype(string name, Prototype *foreign, E_MERGE_MODE mode) {
+    switch (mode) {
+        case E_MERGE_MODE::AVERAGE: {
+            switch (foreign->etype) {
+                case ETYPE::FLOAT: {
+                    auto val = ((typed_Prototype<float>*)(*subvalues_map)[name])->value;
+                    ((typed_Prototype<float>*)(*subvalues_map)[name])->value = ( val + ((typed_Prototype<float>*)foreign)->value ) / 2;
+                    break;
+                }
+                case ETYPE::INT: {
+                    auto val = ((typed_Prototype<int>*)(*subvalues_map)[name])->value;
+                    ((typed_Prototype<int>*)(*subvalues_map)[name])->value = ( val + ((typed_Prototype<float>*)foreign)->value ) / 2;
+                    break;
+                }
+            }
+            break;
+        }
+        case E_MERGE_MODE::LEFT_INNER: {
+            if ((*subvalues_map)[name]->subvalues_col != nullptr) {
+                (*subvalues_map)[name]->merge(*foreign->subvalues_col);
+            }
+            else {
+                (*subvalues_map)[name]->initialize_col();
+                (*subvalues_map)[name]->merge(*foreign->subvalues_col);
+            }
+            break;
+        }
+        case E_MERGE_MODE::RIGHT_INNER: {
+            switch (foreign->etype) {
+                case ETYPE::FLOAT: {
+                    ((typed_Prototype<float>*)(*subvalues_map)[name])->value = ((typed_Prototype<float>*)foreign)->value;
+                    break;
+                }
+                case ETYPE::INT: {
+                    ((typed_Prototype<int>*)(*subvalues_map)[name])->value = ((typed_Prototype<int>*)foreign)->value;
+                    break;
+                }
+                case ETYPE::STRING: {
+                    ((typed_Prototype<string>*)(*subvalues_map)[name])->value = ((typed_Prototype<string>*)foreign)->value;
+                    break;
+                }
+
+
+            }
+            break;
+        }
+    }
+
+    if (foreign->subvalues_map != nullptr) {
+        if ((*subvalues_map)[name]->subvalues_map == nullptr)
+            initialize_map();
+
+        (*subvalues_map)[name]->merge(*foreign->subvalues_map, mode);
+    }
+}
+
 void Prototype::merge(Table::Column& val) {
     if (this->subvalues_col != nullptr)
         this->subvalues_col->insert( (*subvalues_col).end(), val.begin(), val.end() );
     else if (this->parent != nullptr)
         this->parent->merge(val);
+    else {
+        // Do nothing
+    }
+
+}
+
+void Prototype::merge(map<string, Prototype*>& foreign, E_MERGE_MODE mode) {
+    if (this->subvalues_map != nullptr) {
+        for (auto const&[name, foreign_subprototype] : foreign) {
+            if (mode != E_MERGE_MODE::OUTER &&
+            this->subvalues_map->find(name) != this->subvalues_map->end()) {
+                if ((*subvalues_map)[name]->etype == foreign_subprototype->etype) {
+                    this->_merge_subprototype(name, foreign_subprototype, mode);
+                }
+            }
+            else {
+                (*this->subvalues_map)[name] = foreign_subprototype;
+            }
+        }
+    }
+    else if (this->parent != nullptr) {
+        this->parent->merge(foreign, mode);
+    }
     else {
         // Do nothing
     }
@@ -258,8 +348,8 @@ Prototype Prototype::search(Prototype &query) {
             //   Use val->comparison to and val->type to search() for the value
             //   ([Post mortem NOTE: uses val->comparison and val->type via the has() function])
 
-            // Search [#person brother: [name: "Ryan"]]
-            // Search(person).foreach.has(brother: { name: "Ryan" })
+            // Search [#person brother: [name: "Ryan"]] // DONE
+            // Search(person).foreach.has(brother: { name: "Ryan" }) // DONE
 
             // people = search(person) // DONE TODO: TEST
             // foreach(person in people): // DONE TODO: TEST

@@ -17,13 +17,15 @@ enum ETYPE {
     STRING, INT, FLOAT, NONE=0
 };
 
+enum E_MERGE_MODE {
+    LEFT_INNER, RIGHT_INNER, OUTER, AVERAGE
+};
+
 typedef bool (*Comparator)(Prototype*, Prototype*);
 class Prototype {
 public:
-
-    Prototype() {
-
-    };
+    static unsigned int IDENTITY;
+    Prototype();;
 
     ~Prototype();
 
@@ -46,7 +48,12 @@ public:
 
     void append(Prototype* value);
 
+    void _merge(map<string, Prototype*>& val);
+    void _merge_subprototype(string name, Prototype* foreign, E_MERGE_MODE mode);
+
     void merge(Table::Column& val);
+    void merge(map<string, Prototype*>& foreign, E_MERGE_MODE mode);
+
 
     Prototype* _search(string name, ETYPE type, Comparator comparison);
     Prototype* _search(string name, int value, Comparator comparison);
