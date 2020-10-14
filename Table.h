@@ -10,8 +10,7 @@
 using std::vector;
 using std::string;
 
-class Prototype;
-
+#include "Utility.h"
 
 
 class Table {
@@ -26,8 +25,20 @@ public:
         void append(int val);
         void append(float val);
         void append(bool val);
+        void append(MemberFunction mb_fn);
         //   void push_back(int_Prototype* val);
         // void push_back(float_Prototype* val);
+
+    };
+    class Row : public map<string, Prototype*> {
+    public:
+
+
+        void append(string name, string val);
+        void append(string name, int val);
+        void append(string name, float val);
+        void append(string name, bool val);
+        void append(string name, MemberFunction mb_fn);
 
     };
     // TODO

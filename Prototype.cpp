@@ -39,29 +39,12 @@ struct isValue
     }
 };
 
-unsigned int Prototype::IDENTITY = 0; // TESTING NEW USERNAME
 
 Prototype::Prototype() {
-    IDENTITY++;
-    this->identity = IDENTITY;
 }
 
 string Prototype::to_string(int indentation) {
     return "";
-}
-
-
-void Prototype::append(string name, int value) {
-    auto val = new typed_Prototype<int>(this, value, ETYPE::INT);
-    (*subvalues_map)[name] = val;
-}
-
-void Prototype::append(string name, float value) {
-    (*subvalues_map)[name] = new typed_Prototype<float>(this, value, ETYPE::FLOAT);
-}
-
-void Prototype::append(string name, string value) {
-    (*subvalues_map)[name] = new typed_Prototype<string>(this, value, ETYPE::STRING);
 }
 
 void Prototype::append(string name, Prototype *value) {
@@ -446,7 +429,7 @@ bool Prototype::has_tag(string tag) {
 }
 
 void Prototype::initialize_map() {
-    subvalues_map = new map<string, Prototype*>();
+    subvalues_map = new Table::Row();
 }
 
 Prototype *Prototype::_search(string tag) {

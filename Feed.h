@@ -19,6 +19,10 @@ class Feed : public vector<T> {
     void Add(Processor processor);
 
     void Add(T line);
+
+    void OnNewInfo(T line) {
+        Add(line);
+    }
 };
 
 template<class T>

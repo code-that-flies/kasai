@@ -8,23 +8,11 @@
 #include <string>
 #include <map>
 
+#include "Utility.h"
 #include "Table.h"
 
-using std::string;
-using std::map;
-
-enum ETYPE {
-    STRING, INT, FLOAT, BOOL, NONE=0
-};
-
-enum E_MERGE_MODE {
-    LEFT_INNER, RIGHT_INNER, OUTER, AVERAGE
-};
-
-typedef bool (*Comparator)(Prototype*, Prototype*);
 class Prototype {
 public:
-    static unsigned int IDENTITY;
     Prototype();;
 
     ~Prototype();
@@ -38,12 +26,9 @@ public:
 
     Prototype* parent = NULL;
     Table::Column * subvalues_col = nullptr;
-    map<string, Prototype*> * subvalues_map  = nullptr;
+    Table::Row * subvalues_map  = nullptr;
     Comparator* comparison = nullptr;
 
-    void append(string name, int value);
-    void append(string name, float value);
-    void append(string name, string value);
     void append(string name, Prototype* value);
 
     void append(Prototype* value);
