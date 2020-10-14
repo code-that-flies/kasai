@@ -14,7 +14,7 @@ using std::string;
 using std::map;
 
 enum ETYPE {
-    STRING, INT, FLOAT, NONE=0
+    STRING, INT, FLOAT, BOOL, NONE=0
 };
 
 enum E_MERGE_MODE {

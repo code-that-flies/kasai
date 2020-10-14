@@ -10,12 +10,15 @@ struct isValue
     string s_value;
     int i_value;
     float f_value;
+    bool b_value;
 
     isValue(int value) : i_value(value) {}
 
     isValue(string value) : s_value(value) {}
 
     isValue(float value) : f_value(value) {}
+
+    isValue(bool value) : b_value(value) {}
 
     bool operator()(const Prototype *prototype) const
     {
@@ -29,6 +32,9 @@ struct isValue
         }
         else if (prototype->etype == ETYPE::FLOAT) {
             return ((typed_Prototype<float>*)prototype)->value == f_value;
+        }
+        else if (prototype->etype == ETYPE::BOOL) {
+            return ((typed_Prototype<bool>*)prototype)->value == b_value;
         }
     }
 };

@@ -32,6 +32,10 @@ void Table::Column::append(float val) {
     push_back(new typed_Prototype<float>(val,ETYPE::FLOAT));
 }
 
+void Table::Column::append(bool val) {
+    push_back(new typed_Prototype<bool>(val,ETYPE::BOOL));
+}
+
 Table::Column::Column() {
 
 }

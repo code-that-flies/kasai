@@ -25,6 +25,7 @@ public:
         void append(string val);
         void append(int val);
         void append(float val);
+        void append(bool val);
         //   void push_back(int_Prototype* val);
         // void push_back(float_Prototype* val);
 
