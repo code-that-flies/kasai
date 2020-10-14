@@ -143,6 +143,87 @@ kasai/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/build
 .PHONY : kasai/fast
 
+Event.o: Event.cpp.o
+
+.PHONY : Event.o
+
+# target to build an object file
+Event.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Event.cpp.o
+.PHONY : Event.cpp.o
+
+Event.i: Event.cpp.i
+
+.PHONY : Event.i
+
+# target to preprocess a source file
+Event.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Event.cpp.i
+.PHONY : Event.cpp.i
+
+Event.s: Event.cpp.s
+
+.PHONY : Event.s
+
+# target to generate assembly for a file
+Event.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Event.cpp.s
+.PHONY : Event.cpp.s
+
+Feed.o: Feed.cpp.o
+
+.PHONY : Feed.o
+
+# target to build an object file
+Feed.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Feed.cpp.o
+.PHONY : Feed.cpp.o
+
+Feed.i: Feed.cpp.i
+
+.PHONY : Feed.i
+
+# target to preprocess a source file
+Feed.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Feed.cpp.i
+.PHONY : Feed.cpp.i
+
+Feed.s: Feed.cpp.s
+
+.PHONY : Feed.s
+
+# target to generate assembly for a file
+Feed.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Feed.cpp.s
+.PHONY : Feed.cpp.s
+
+File.o: File.cpp.o
+
+.PHONY : File.o
+
+# target to build an object file
+File.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/File.cpp.o
+.PHONY : File.cpp.o
+
+File.i: File.cpp.i
+
+.PHONY : File.i
+
+# target to preprocess a source file
+File.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/File.cpp.i
+.PHONY : File.cpp.i
+
+File.s: File.cpp.s
+
+.PHONY : File.s
+
+# target to generate assembly for a file
+File.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/File.cpp.s
+.PHONY : File.cpp.s
+
 Pattern.o: Pattern.cpp.o
 
 .PHONY : Pattern.o
@@ -223,6 +304,60 @@ Prototype.s: Prototype.cpp.s
 Prototype.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Prototype.cpp.s
 .PHONY : Prototype.cpp.s
+
+Prototype_Engine.o: Prototype_Engine.cpp.o
+
+.PHONY : Prototype_Engine.o
+
+# target to build an object file
+Prototype_Engine.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Prototype_Engine.cpp.o
+.PHONY : Prototype_Engine.cpp.o
+
+Prototype_Engine.i: Prototype_Engine.cpp.i
+
+.PHONY : Prototype_Engine.i
+
+# target to preprocess a source file
+Prototype_Engine.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Prototype_Engine.cpp.i
+.PHONY : Prototype_Engine.cpp.i
+
+Prototype_Engine.s: Prototype_Engine.cpp.s
+
+.PHONY : Prototype_Engine.s
+
+# target to generate assembly for a file
+Prototype_Engine.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Prototype_Engine.cpp.s
+.PHONY : Prototype_Engine.cpp.s
+
+Splitter.o: Splitter.cpp.o
+
+.PHONY : Splitter.o
+
+# target to build an object file
+Splitter.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Splitter.cpp.o
+.PHONY : Splitter.cpp.o
+
+Splitter.i: Splitter.cpp.i
+
+.PHONY : Splitter.i
+
+# target to preprocess a source file
+Splitter.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Splitter.cpp.i
+.PHONY : Splitter.cpp.i
+
+Splitter.s: Splitter.cpp.s
+
+.PHONY : Splitter.s
+
+# target to generate assembly for a file
+Splitter.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Splitter.cpp.s
+.PHONY : Splitter.cpp.s
 
 Substring.o: Substring.cpp.o
 
@@ -305,60 +440,6 @@ Tally.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/Tally.cpp.s
 .PHONY : Tally.cpp.s
 
-float_Prototype.o: float_Prototype.cpp.o
-
-.PHONY : float_Prototype.o
-
-# target to build an object file
-float_Prototype.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/float_Prototype.cpp.o
-.PHONY : float_Prototype.cpp.o
-
-float_Prototype.i: float_Prototype.cpp.i
-
-.PHONY : float_Prototype.i
-
-# target to preprocess a source file
-float_Prototype.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/float_Prototype.cpp.i
-.PHONY : float_Prototype.cpp.i
-
-float_Prototype.s: float_Prototype.cpp.s
-
-.PHONY : float_Prototype.s
-
-# target to generate assembly for a file
-float_Prototype.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/float_Prototype.cpp.s
-.PHONY : float_Prototype.cpp.s
-
-int_Prototype.o: int_Prototype.cpp.o
-
-.PHONY : int_Prototype.o
-
-# target to build an object file
-int_Prototype.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/int_Prototype.cpp.o
-.PHONY : int_Prototype.cpp.o
-
-int_Prototype.i: int_Prototype.cpp.i
-
-.PHONY : int_Prototype.i
-
-# target to preprocess a source file
-int_Prototype.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/int_Prototype.cpp.i
-.PHONY : int_Prototype.cpp.i
-
-int_Prototype.s: int_Prototype.cpp.s
-
-.PHONY : int_Prototype.s
-
-# target to generate assembly for a file
-int_Prototype.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/int_Prototype.cpp.s
-.PHONY : int_Prototype.cpp.s
-
 list.o: list.cpp.o
 
 .PHONY : list.o
@@ -413,32 +494,32 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/main.cpp.s
 .PHONY : main.cpp.s
 
-string_Prototype.o: string_Prototype.cpp.o
+member_Prototype.o: member_Prototype.cpp.o
 
-.PHONY : string_Prototype.o
+.PHONY : member_Prototype.o
 
 # target to build an object file
-string_Prototype.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/string_Prototype.cpp.o
-.PHONY : string_Prototype.cpp.o
+member_Prototype.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/member_Prototype.cpp.o
+.PHONY : member_Prototype.cpp.o
 
-string_Prototype.i: string_Prototype.cpp.i
+member_Prototype.i: member_Prototype.cpp.i
 
-.PHONY : string_Prototype.i
+.PHONY : member_Prototype.i
 
 # target to preprocess a source file
-string_Prototype.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/string_Prototype.cpp.i
-.PHONY : string_Prototype.cpp.i
+member_Prototype.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/member_Prototype.cpp.i
+.PHONY : member_Prototype.cpp.i
 
-string_Prototype.s: string_Prototype.cpp.s
+member_Prototype.s: member_Prototype.cpp.s
 
-.PHONY : string_Prototype.s
+.PHONY : member_Prototype.s
 
 # target to generate assembly for a file
-string_Prototype.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/string_Prototype.cpp.s
-.PHONY : string_Prototype.cpp.s
+member_Prototype.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/kasai.dir/build.make CMakeFiles/kasai.dir/member_Prototype.cpp.s
+.PHONY : member_Prototype.cpp.s
 
 typed_Prototype.o: typed_Prototype.cpp.o
 
@@ -476,6 +557,15 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... kasai"
+	@echo "... Event.o"
+	@echo "... Event.i"
+	@echo "... Event.s"
+	@echo "... Feed.o"
+	@echo "... Feed.i"
+	@echo "... Feed.s"
+	@echo "... File.o"
+	@echo "... File.i"
+	@echo "... File.s"
 	@echo "... Pattern.o"
 	@echo "... Pattern.i"
 	@echo "... Pattern.s"
@@ -485,6 +575,12 @@ help:
 	@echo "... Prototype.o"
 	@echo "... Prototype.i"
 	@echo "... Prototype.s"
+	@echo "... Prototype_Engine.o"
+	@echo "... Prototype_Engine.i"
+	@echo "... Prototype_Engine.s"
+	@echo "... Splitter.o"
+	@echo "... Splitter.i"
+	@echo "... Splitter.s"
 	@echo "... Substring.o"
 	@echo "... Substring.i"
 	@echo "... Substring.s"
@@ -494,21 +590,15 @@ help:
 	@echo "... Tally.o"
 	@echo "... Tally.i"
 	@echo "... Tally.s"
-	@echo "... float_Prototype.o"
-	@echo "... float_Prototype.i"
-	@echo "... float_Prototype.s"
-	@echo "... int_Prototype.o"
-	@echo "... int_Prototype.i"
-	@echo "... int_Prototype.s"
 	@echo "... list.o"
 	@echo "... list.i"
 	@echo "... list.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
-	@echo "... string_Prototype.o"
-	@echo "... string_Prototype.i"
-	@echo "... string_Prototype.s"
+	@echo "... member_Prototype.o"
+	@echo "... member_Prototype.i"
+	@echo "... member_Prototype.s"
 	@echo "... typed_Prototype.o"
 	@echo "... typed_Prototype.i"
 	@echo "... typed_Prototype.s"

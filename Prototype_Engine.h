@@ -22,7 +22,7 @@ public:
         delete prototypeEngine;
         delete Event::event_engine;
 
-        for( auto const& [key, val] : File::files    ) {
+        for( auto const& [key, val] : File::files ) {
             delete val;
         }
     }

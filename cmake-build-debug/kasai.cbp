@@ -44,8 +44,8 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/include"/>
 					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
 					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.1.0/include"/>
 					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
 					<Add directory="/System/Library/Frameworks"/>
@@ -65,8 +65,8 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
-					<Add directory="/usr/local/include"/>
 					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
 					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/9.1.0/include"/>
 					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
 					<Add directory="/System/Library/Frameworks"/>
@@ -80,6 +80,24 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/Users/blair/CLionProjects/kasai/Event.cpp">
+			<Option target="kasai"/>
+		</Unit>
+		<Unit filename="/Users/blair/CLionProjects/kasai/Event.h">
+			<Option target="kasai"/>
+		</Unit>
+		<Unit filename="/Users/blair/CLionProjects/kasai/Feed.cpp">
+			<Option target="kasai"/>
+		</Unit>
+		<Unit filename="/Users/blair/CLionProjects/kasai/Feed.h">
+			<Option target="kasai"/>
+		</Unit>
+		<Unit filename="/Users/blair/CLionProjects/kasai/File.cpp">
+			<Option target="kasai"/>
+		</Unit>
+		<Unit filename="/Users/blair/CLionProjects/kasai/File.h">
+			<Option target="kasai"/>
+		</Unit>
 		<Unit filename="/Users/blair/CLionProjects/kasai/Pattern.cpp">
 			<Option target="kasai"/>
 		</Unit>
@@ -96,6 +114,18 @@
 			<Option target="kasai"/>
 		</Unit>
 		<Unit filename="/Users/blair/CLionProjects/kasai/Prototype.h">
+			<Option target="kasai"/>
+		</Unit>
+		<Unit filename="/Users/blair/CLionProjects/kasai/Prototype_Engine.cpp">
+			<Option target="kasai"/>
+		</Unit>
+		<Unit filename="/Users/blair/CLionProjects/kasai/Prototype_Engine.h">
+			<Option target="kasai"/>
+		</Unit>
+		<Unit filename="/Users/blair/CLionProjects/kasai/Splitter.cpp">
+			<Option target="kasai"/>
+		</Unit>
+		<Unit filename="/Users/blair/CLionProjects/kasai/Splitter.h">
 			<Option target="kasai"/>
 		</Unit>
 		<Unit filename="/Users/blair/CLionProjects/kasai/Substring.cpp">
@@ -116,16 +146,7 @@
 		<Unit filename="/Users/blair/CLionProjects/kasai/Tally.h">
 			<Option target="kasai"/>
 		</Unit>
-		<Unit filename="/Users/blair/CLionProjects/kasai/float_Prototype.cpp">
-			<Option target="kasai"/>
-		</Unit>
-		<Unit filename="/Users/blair/CLionProjects/kasai/float_Prototype.h">
-			<Option target="kasai"/>
-		</Unit>
-		<Unit filename="/Users/blair/CLionProjects/kasai/int_Prototype.cpp">
-			<Option target="kasai"/>
-		</Unit>
-		<Unit filename="/Users/blair/CLionProjects/kasai/int_Prototype.h">
+		<Unit filename="/Users/blair/CLionProjects/kasai/Utility.h">
 			<Option target="kasai"/>
 		</Unit>
 		<Unit filename="/Users/blair/CLionProjects/kasai/list.cpp">
@@ -137,10 +158,10 @@
 		<Unit filename="/Users/blair/CLionProjects/kasai/main.cpp">
 			<Option target="kasai"/>
 		</Unit>
-		<Unit filename="/Users/blair/CLionProjects/kasai/string_Prototype.cpp">
+		<Unit filename="/Users/blair/CLionProjects/kasai/member_Prototype.cpp">
 			<Option target="kasai"/>
 		</Unit>
-		<Unit filename="/Users/blair/CLionProjects/kasai/string_Prototype.h">
+		<Unit filename="/Users/blair/CLionProjects/kasai/member_Prototype.h">
 			<Option target="kasai"/>
 		</Unit>
 		<Unit filename="/Users/blair/CLionProjects/kasai/typed_Prototype.cpp">
