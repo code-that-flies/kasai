@@ -8,7 +8,6 @@
 #include "member_Prototype.h"
 #include "Prototype_Engine.h"
 
-#include <vector>
 
 // TODO
 void Table::Add(string name, Prototype defaultValue) {

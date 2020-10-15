@@ -3,3 +3,5 @@
 //
 
 #include "File.h"
+
+map<string, File*> File::files = map<string, File*>();

@@ -4,6 +4,7 @@
 #include "Prototype.h"
 #include "Pattern.h"
 #include "typed_Prototype.h"
+#include "Prototype_Engine.h"
 
 using std::string;
 using std::vector;
@@ -134,5 +135,7 @@ int main() {
     std::cout << std::endl << val.tally_substrings();
 
     delete val2;
+
+    Prototype_Engine::End();
     return 0;
 }
