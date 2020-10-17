@@ -46,16 +46,16 @@ Table::Column::Column() {
 }
 
 
-void Table::Row::append(string name, string val) {
-    if (this->find(name) == this->end()) {
+void Table::Row::append(string name, string val, bool override) {
+    if (this->find(name) == this->end() || override) {
         auto* item = new typed_Prototype<string>(val, ETYPE::STRING);
         item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
     }
 }
 
-void Table::Row::append(string name, bool val) {
-    if (this->find(name) == this->end()) {
+void Table::Row::append(string name, bool val, bool override) {
+    if (this->find(name) == this->end() || override) {
         auto* item = new typed_Prototype<bool>(val, ETYPE::BOOL);
         item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
@@ -63,8 +63,8 @@ void Table::Row::append(string name, bool val) {
     }
 }
 
-void Table::Row::append(string name, int val) {
-    if (this->find(name) == this->end()) {
+void Table::Row::append(string name, int val, bool override) {
+    if (this->find(name) == this->end() || override) {
         auto* item =  new typed_Prototype<int>(val, ETYPE::INT);
         item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
@@ -72,8 +72,8 @@ void Table::Row::append(string name, int val) {
     }
 }
 
-void Table::Row::append(string name, float val) {
-    if (this->find(name) == this->end()) {
+void Table::Row::append(string name, float val, bool override) {
+    if (this->find(name) == this->end() || override) {
         auto* item = new typed_Prototype<float>(val, ETYPE::FLOAT);
         item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
@@ -81,8 +81,8 @@ void Table::Row::append(string name, float val) {
     }
 }
 
-void Table::Row::append(string name, MemberFunction mb_fn) {
-    if (this->find(name) == this->end()) {
+void Table::Row::append(string name, MemberFunction mb_fn, bool override) {
+    if (this->find(name) == this->end() || override) {
         auto* item = new member_Prototype(mb_fn);
         item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
@@ -90,10 +90,12 @@ void Table::Row::append(string name, MemberFunction mb_fn) {
     }
 }
 
+// Override is always
 void Table::Row::commit(string name, string val, ETYPE etype) {
     // TODO ( this->commit(name, parse(val, etype)) );
 }
 
+// Override is always
 void Table::Row::commit(string name, Prototype *item) {
     item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
     (*this)[name] = item;

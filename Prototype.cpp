@@ -449,7 +449,7 @@ bool Prototype::_has(string query_name, Prototype *query, Comparator comparison)
 
 }
 
-Prototype &Prototype::tag(string tag) {
+Prototype &Prototype::tag(string tag, bool overried) {
     if (subvalues_row != nullptr) {
         if (subvalues_row->find("tags") != subvalues_row->end()) {
             auto tags = *(*subvalues_row)["tags"]->subvalues_col;

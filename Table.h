@@ -42,11 +42,11 @@ public:
     class Row : public map<string, Prototype*>, public Data_Structure {
     public:
 
-        void append(string name, string val);
-        void append(string name, int val);
-        void append(string name, float val);
-        void append(string name, bool val);
-        void append(string name, MemberFunction mb_fn);
+        void append(string name, string val, bool override);
+        void append(string name, int val, bool override);
+        void append(string name, float val, bool override);
+        void append(string name, bool val, bool override);
+        void append(string name, MemberFunction mb_fn, bool override);
 
 
         void commit(string name, Prototype* prototype);
