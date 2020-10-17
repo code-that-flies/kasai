@@ -48,17 +48,17 @@ string Prototype::to_string(int indentation) {
 }
 
 void Prototype::append(string name, Prototype *value) {
-    (*subvalues_map)[name] = value;
+    (*subvalues_row)[name] = value;
     value->parent = this;
     value->etype = ETYPE::NONE;
 }
 
 Prototype::~Prototype() {
-    if (subvalues_map != nullptr) {
-        for( auto const& [index, val] : *subvalues_map ) {
+    if (subvalues_row != nullptr) {
+        for( auto const& [index, val] : *subvalues_row ) {
             delete val;
         }
-        delete subvalues_map;
+        delete subvalues_row;
     }
     if (subvalues_col != nullptr) {
         for( auto const& val : *subvalues_col ) {
@@ -69,9 +69,9 @@ Prototype::~Prototype() {
 }
 
 Prototype *Prototype::_search(string name, ETYPE type, Comparator comparison) {
-    if (subvalues_map->find(name) != subvalues_map->end()) {
-        if ((*subvalues_map)[name]->etype == type)
-            return (*subvalues_map)[name];
+    if (subvalues_row->find(name) != subvalues_row->end()) {
+        if ((*subvalues_row)[name]->etype == type)
+            return (*subvalues_row)[name];
         else
             return nullptr;
     }
@@ -80,10 +80,10 @@ Prototype *Prototype::_search(string name, ETYPE type, Comparator comparison) {
     }
 }
 
-Prototype *Prototype::_search(string name, int value, Comparator comparison) {
-    if (subvalues_map->find(name) != subvalues_map->end()) {
-        if ((*subvalues_map)[name]->etype == ETYPE::INT)
-            return (*subvalues_map)[name];
+Prototype *Prototype::_search(string name, int value, IntComparator comparison) {
+    if (subvalues_row->find(name) != subvalues_row->end()) {
+        if ((*subvalues_row)[name]->etype == ETYPE::INT)
+            return (*subvalues_row)[name];
         else
             return nullptr;
     }
@@ -93,10 +93,23 @@ Prototype *Prototype::_search(string name, int value, Comparator comparison) {
     return nullptr;
 }
 
-Prototype *Prototype::_search(string name, float value, Comparator comparison) {
-    if (subvalues_map->find(name) != subvalues_map->end()) {
-        if ((*subvalues_map)[name]->etype == ETYPE::FLOAT)
-            return (*subvalues_map)[name];
+Prototype *Prototype::_search(string name, bool value, BoolComparator comparison) {
+    if (subvalues_row->find(name) != subvalues_row->end()) {
+        if ((*subvalues_row)[name]->etype == ETYPE::INT)
+            return (*subvalues_row)[name];
+        else
+            return nullptr;
+    }
+    else {
+        return nullptr;
+    }
+    return nullptr;
+}
+
+Prototype *Prototype::_search(string name, float value, FloatComparator comparison) {
+    if (subvalues_row->find(name) != subvalues_row->end()) {
+        if ((*subvalues_row)[name]->etype == ETYPE::FLOAT)
+            return (*subvalues_row)[name];
         else
             return nullptr;
     }
@@ -105,10 +118,10 @@ Prototype *Prototype::_search(string name, float value, Comparator comparison) {
     }
 }
 
-Prototype *Prototype::_search(string name, string value, Comparator comparison) {
-    if (subvalues_map->find(name) != subvalues_map->end()) {
-        if ((*subvalues_map)[name]->etype == ETYPE::STRING)
-            return (*subvalues_map)[name];
+Prototype *Prototype::_search(string name, string value, StrComparator comparison) {
+    if (subvalues_row->find(name) != subvalues_row->end()) {
+        if ((*subvalues_row)[name]->etype == ETYPE::STRING)
+            return (*subvalues_row)[name];
         else
             return nullptr;
     }
@@ -126,17 +139,18 @@ void Prototype::append(Prototype *value) {
 
 
 
-Prototype Prototype::search(string name, ETYPE type, Comparator comparison) {
+Prototype Prototype::search(string name, ETYPE type, Comparator comparison, int& searchDepth) {
     auto result = Prototype();
     result.initialize_col();
-    if (this->subvalues_map != nullptr) {
-        for( auto const& [index, prototype] : *subvalues_map ) {
-            result.merge(*prototype->search(name, type, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+    searchDepth++;
+    if (this->subvalues_row != nullptr) {
+        for( auto const& [index, prototype] : *subvalues_row ) {
+            result.merge(*prototype->search(name, type, comparison, searchDepth).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
     if (this->subvalues_col != nullptr) {
         for( auto const& prototype : *subvalues_col ) {
-            result.merge(*prototype->search(name, type, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+            result.merge(*prototype->search(name, type, comparison, searchDepth).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
 
@@ -146,38 +160,18 @@ Prototype Prototype::search(string name, ETYPE type, Comparator comparison) {
     return result;
 }
 
-
-
-Prototype Prototype::search(string name, int value, Comparator comparison) {
+Prototype Prototype::search(string name, bool value, BoolComparator comparison, int &searchDepth) {
     auto result = Prototype();
     result.initialize_col();
-    if (this->subvalues_map != nullptr) {
-        for( auto const& [index, prototype] : *subvalues_map ) {
-            result.merge(*prototype->search(name, value, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+    searchDepth++;
+    if (this->subvalues_row != nullptr) {
+        for( auto const& [index, prototype] : *subvalues_row ) {
+            result.merge(*prototype->search(name, value, comparison, searchDepth).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
     if (this->subvalues_col != nullptr) {
         for( auto const& prototype : *subvalues_col ) {
-            result.merge(*prototype->search(name, value, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
-        }
-    }
-
-    result.merge(*_search(name, value, comparison)->subvalues_col);
-
-
-    return result;
-}
-Prototype Prototype::search(string name, float value, Comparator comparison) {
-    auto result = Prototype();
-    result.initialize_col();
-    if (this->subvalues_map != nullptr) {
-        for( auto const& [index, prototype] : *subvalues_map ) {
-            result.merge(*prototype->search(name, value, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
-        }
-    }
-    if (this->subvalues_col != nullptr) {
-        for( auto const& prototype : *subvalues_col ) {
-            result.merge(*prototype->search(name, value, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+            result.merge(*prototype->search(name, value, comparison, searchDepth).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
 
@@ -189,17 +183,60 @@ Prototype Prototype::search(string name, float value, Comparator comparison) {
 
 
 
-Prototype Prototype::search(string name, string value, Comparator comparison) {
+Prototype Prototype::search(string name, int value, IntComparator comparison, int& searchDepth) {
     auto result = Prototype();
     result.initialize_col();
-    if (this->subvalues_map != nullptr) {
-        for( auto const& [index, prototype] : *subvalues_map ) {
-            result.merge(*prototype->search(name, value, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+    searchDepth++;
+    if (this->subvalues_row != nullptr) {
+        for( auto const& [index, prototype] : *subvalues_row ) {
+            result.merge(*prototype->search(name, value, comparison, searchDepth).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
     if (this->subvalues_col != nullptr) {
         for( auto const& prototype : *subvalues_col ) {
-            result.merge(*prototype->search(name, value, comparison).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+            result.merge(*prototype->search(name, value, comparison, searchDepth).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+        }
+    }
+
+    result.merge(*_search(name, value, comparison)->subvalues_col);
+
+
+    return result;
+}
+Prototype Prototype::search(string name, float value, FloatComparator comparison, int& searchDepth) {
+    auto result = Prototype();
+    result.initialize_col();
+    searchDepth++;
+    if (this->subvalues_row != nullptr) {
+        for( auto const& [index, prototype] : *subvalues_row ) {
+            result.merge(*prototype->search(name, value, comparison, searchDepth).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+        }
+    }
+    if (this->subvalues_col != nullptr) {
+        for( auto const& prototype : *subvalues_col ) {
+            result.merge(*prototype->search(name, value, comparison, searchDepth).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+        }
+    }
+
+    result.merge(*_search(name, value, comparison)->subvalues_col);
+
+
+    return result;
+}
+
+
+
+Prototype Prototype::search(string name, string value, StrComparator comparison, int& searchDepth) {
+    auto result = Prototype();
+    result.initialize_col();
+    if (this->subvalues_row != nullptr) {
+        for( auto const& [index, prototype] : *subvalues_row ) {
+            result.merge(*prototype->search(name, value, comparison, searchDepth).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
+        }
+    }
+    if (this->subvalues_col != nullptr) {
+        for( auto const& prototype : *subvalues_col ) {
+            result.merge(*prototype->search(name, value, comparison, searchDepth).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
 
@@ -212,8 +249,8 @@ Prototype Prototype::search(string name, string value, Comparator comparison) {
 Prototype Prototype::search(string tag) {
     auto result = Prototype();
     result.initialize_col();
-    if (this->subvalues_map != nullptr) {
-        for( auto const& [index, prototype] : *subvalues_map ) {
+    if (this->subvalues_row != nullptr) {
+        for( auto const& [index, prototype] : *subvalues_row ) {
             result.merge(*prototype->search(tag).subvalues_col); // TODO: test this statement's functionality, it MAY not work!
         }
     }
@@ -242,40 +279,40 @@ void Prototype::_merge_subprototype(string name, Prototype *foreign, E_MERGE_MOD
         case E_MERGE_MODE::AVERAGE: {
             switch (foreign->etype) {
                 case ETYPE::FLOAT: {
-                    auto val = ((typed_Prototype<float>*)(*subvalues_map)[name])->value;
-                    ((typed_Prototype<float>*)(*subvalues_map)[name])->value = ( val + ((typed_Prototype<float>*)foreign)->value ) / 2;
+                    auto val = ((typed_Prototype<float>*)(*subvalues_row)[name])->value;
+                    ((typed_Prototype<float>*)(*subvalues_row)[name])->value = (val + ((typed_Prototype<float>*)foreign)->value ) / 2;
                     break;
                 }
                 case ETYPE::INT: {
-                    auto val = ((typed_Prototype<int>*)(*subvalues_map)[name])->value;
-                    ((typed_Prototype<int>*)(*subvalues_map)[name])->value = ( val + ((typed_Prototype<float>*)foreign)->value ) / 2;
+                    auto val = ((typed_Prototype<int>*)(*subvalues_row)[name])->value;
+                    ((typed_Prototype<int>*)(*subvalues_row)[name])->value = (val + ((typed_Prototype<float>*)foreign)->value ) / 2;
                     break;
                 }
             }
             break;
         }
         case E_MERGE_MODE::LEFT_INNER: {
-            if ((*subvalues_map)[name]->subvalues_col != nullptr) {
-                (*subvalues_map)[name]->merge(*foreign->subvalues_col);
+            if ((*subvalues_row)[name]->subvalues_col != nullptr) {
+                (*subvalues_row)[name]->merge(*foreign->subvalues_col);
             }
             else {
-                (*subvalues_map)[name]->initialize_col();
-                (*subvalues_map)[name]->merge(*foreign->subvalues_col);
+                (*subvalues_row)[name]->initialize_col();
+                (*subvalues_row)[name]->merge(*foreign->subvalues_col);
             }
             break;
         }
         case E_MERGE_MODE::RIGHT_INNER: {
             switch (foreign->etype) {
                 case ETYPE::FLOAT: {
-                    ((typed_Prototype<float>*)(*subvalues_map)[name])->value = ((typed_Prototype<float>*)foreign)->value;
+                    ((typed_Prototype<float>*)(*subvalues_row)[name])->value = ((typed_Prototype<float>*)foreign)->value;
                     break;
                 }
                 case ETYPE::INT: {
-                    ((typed_Prototype<int>*)(*subvalues_map)[name])->value = ((typed_Prototype<int>*)foreign)->value;
+                    ((typed_Prototype<int>*)(*subvalues_row)[name])->value = ((typed_Prototype<int>*)foreign)->value;
                     break;
                 }
                 case ETYPE::STRING: {
-                    ((typed_Prototype<string>*)(*subvalues_map)[name])->value = ((typed_Prototype<string>*)foreign)->value;
+                    ((typed_Prototype<string>*)(*subvalues_row)[name])->value = ((typed_Prototype<string>*)foreign)->value;
                     break;
                 }
 
@@ -285,11 +322,11 @@ void Prototype::_merge_subprototype(string name, Prototype *foreign, E_MERGE_MOD
         }
     }
 
-    if (foreign->subvalues_map != nullptr) {
-        if ((*subvalues_map)[name]->subvalues_map == nullptr)
+    if (foreign->subvalues_row != nullptr) {
+        if ((*subvalues_row)[name]->subvalues_row == nullptr)
             initialize_map();
 
-        (*subvalues_map)[name]->merge(*foreign->subvalues_map, mode);
+        (*subvalues_row)[name]->merge(*foreign->subvalues_row, mode);
     }
 }
 
@@ -305,16 +342,16 @@ void Prototype::merge(Table::Column& val) {
 }
 
 void Prototype::merge(map<string, Prototype*>& foreign, E_MERGE_MODE mode) {
-    if (this->subvalues_map != nullptr) {
+    if (this->subvalues_row != nullptr) {
         for (auto const&[name, foreign_subprototype] : foreign) {
             if (mode != E_MERGE_MODE::OUTER &&
-            this->subvalues_map->find(name) != this->subvalues_map->end()) {
-                if ((*subvalues_map)[name]->etype == foreign_subprototype->etype) {
+                this->subvalues_row->find(name) != this->subvalues_row->end()) {
+                if ((*subvalues_row)[name]->etype == foreign_subprototype->etype) {
                     this->_merge_subprototype(name, foreign_subprototype, mode);
                 }
             }
             else {
-                (*this->subvalues_map)[name] = foreign_subprototype;
+                (*this->subvalues_row)[name] = foreign_subprototype;
             }
         }
     }
@@ -330,8 +367,8 @@ void Prototype::merge(map<string, Prototype*>& foreign, E_MERGE_MODE mode) {
 Prototype Prototype::search(Prototype &query) {
     Prototype result;
     result.initialize_col();
-    if (query.subvalues_col != nullptr) {
-        for (auto *val : *(query.subvalues_col)) {
+    if (subvalues_col != nullptr) {
+        for (auto *val : *(subvalues_col)) {
 
 
             //   Use val->comparison to and val->type to search() for the value
@@ -340,17 +377,27 @@ Prototype Prototype::search(Prototype &query) {
             // Search [#person brother: [name: "Ryan"]] // DONE
             // Search(person).foreach.has(brother: { name: "Ryan" }) // DONE
 
-            // people = search(person) // DONE TODO: TEST
+            // people = search(person) // DONE (separate) TODO: TEST
             // foreach(person in people): // DONE TODO: TEST
             //          append person to result if person.has: // DONE TODO: TEST
             //              brother: // TODO: TEST
             //                  name: "Ryan" // TODO: TEST
 
+
             if (val->has(&query))
                 result.subvalues_col->push_back(val);
         }
-
     }
+
+    if (subvalues_row != nullptr) {
+        for (auto const&[name, prototype] : *subvalues_row) {
+            if (prototype->has(&query)) {
+                result.subvalues_col->push_back(prototype);
+            }
+        }
+    }
+
+    return result;
 }
 
 // TODO: rigorously test the has function
@@ -362,8 +409,8 @@ bool Prototype::has(Prototype *query) {
     //     default: return true
 
 
-    if (this->subvalues_map != nullptr) {
-        for (auto const&[name, prototype] : *query->subvalues_map) {
+    if (this->subvalues_row != nullptr) {
+        for (auto const&[name, prototype] : *query->subvalues_row) {
             if (!_has(name, prototype, *prototype->comparison)) {
                 return false;
             }
@@ -374,8 +421,8 @@ bool Prototype::has(Prototype *query) {
 }
 
 bool Prototype::_has(string query_name, Prototype *query, Comparator comparison) {
-    if(subvalues_map->find(query_name) != subvalues_map->end()) {
-        auto* subprototype = (*subvalues_map)[query_name];
+    if(subvalues_row->find(query_name) != subvalues_row->end()) {
+        auto* subprototype = (*subvalues_row)[query_name];
 
         if (query->etype != ETYPE::NONE) {
             if (query->etype == subprototype->etype) {
@@ -389,8 +436,8 @@ bool Prototype::_has(string query_name, Prototype *query, Comparator comparison)
             }
         }
 
-        if (query->subvalues_map != nullptr && subprototype->subvalues_map != nullptr) {
-            for (auto const&[name, query_subprototype] : *query->subvalues_map) {
+        if (query->subvalues_row != nullptr && subprototype->subvalues_row != nullptr) {
+            for (auto const&[name, query_subprototype] : *query->subvalues_row) {
                 if (subprototype->_has(name, query_subprototype, *query_subprototype->comparison)) {
                 }
                 else {
@@ -403,9 +450,9 @@ bool Prototype::_has(string query_name, Prototype *query, Comparator comparison)
 }
 
 Prototype &Prototype::tag(string tag) {
-    if (subvalues_map != nullptr) {
-        if (subvalues_map->find("tags") != subvalues_map->end()) {
-            auto tags = *(*subvalues_map)["tags"]->subvalues_col;
+    if (subvalues_row != nullptr) {
+        if (subvalues_row->find("tags") != subvalues_row->end()) {
+            auto tags = *(*subvalues_row)["tags"]->subvalues_col;
             if (std::find_if(tags.begin(), tags.end(), isValue(0)) == tags.end()) {
                 tags.append(tag);
             }
@@ -419,8 +466,8 @@ Prototype &Prototype::tag(string tag) {
 }
 
 bool Prototype::has_tag(string tag) {
-    if (subvalues_map->find("tags") != subvalues_map->end()) {
-        auto tags = *(*subvalues_map)["tags"]->subvalues_col;
+    if (subvalues_row->find("tags") != subvalues_row->end()) {
+        auto tags = *(*subvalues_row)["tags"]->subvalues_col;
         return std::find_if(tags.begin(), tags.end(), isValue(tag)) != tags.end();
     }
     else {
@@ -429,7 +476,7 @@ bool Prototype::has_tag(string tag) {
 }
 
 void Prototype::initialize_map() {
-    subvalues_map = new Table::Row();
+    subvalues_row = new Table::Row();
 }
 
 Prototype *Prototype::_search(string tag) {

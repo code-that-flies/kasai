@@ -15,7 +15,16 @@ using std::string;
 
 class Table {
 public:
-    class Column : public vector<Prototype*> {
+    class Data_Structure {
+    public:
+        Prototype* parent;
+        void AttemptToTriggerEvent(string name, string val);
+        void AttemptToTriggerEvent(string name, int val);
+        void AttemptToTriggerEvent(string name, float val);
+        void AttemptToTriggerEvent(string name, bool val);
+    };
+
+    class Column : public vector<Prototype*>, public Data_Structure {
     public:
         Column();
         ~Column();
@@ -30,15 +39,18 @@ public:
         // void push_back(float_Prototype* val);
 
     };
-    class Row : public map<string, Prototype*> {
+    class Row : public map<string, Prototype*>, public Data_Structure {
     public:
-
 
         void append(string name, string val);
         void append(string name, int val);
         void append(string name, float val);
         void append(string name, bool val);
         void append(string name, MemberFunction mb_fn);
+
+
+        void commit(string name, Prototype* prototype);
+        void commit(string name, string val, ETYPE etype);
 
     };
     // TODO

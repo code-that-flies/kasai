@@ -49,7 +49,7 @@ Table::Column::Column() {
 void Table::Row::append(string name, string val) {
     if (this->find(name) == this->end()) {
         auto* item = new typed_Prototype<string>(val, ETYPE::STRING);
-        item->identity = Prototype_Engine::MakeID(name);
+        item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
     }
 }
@@ -57,7 +57,7 @@ void Table::Row::append(string name, string val) {
 void Table::Row::append(string name, bool val) {
     if (this->find(name) == this->end()) {
         auto* item = new typed_Prototype<bool>(val, ETYPE::BOOL);
-        item->identity = Prototype_Engine::MakeID(name);
+        item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
 
     }
@@ -66,7 +66,7 @@ void Table::Row::append(string name, bool val) {
 void Table::Row::append(string name, int val) {
     if (this->find(name) == this->end()) {
         auto* item =  new typed_Prototype<int>(val, ETYPE::INT);
-        item->identity = Prototype_Engine::MakeID(name);
+        item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
 
     }
@@ -75,7 +75,7 @@ void Table::Row::append(string name, int val) {
 void Table::Row::append(string name, float val) {
     if (this->find(name) == this->end()) {
         auto* item = new typed_Prototype<float>(val, ETYPE::FLOAT);
-        item->identity = Prototype_Engine::MakeID(name);
+        item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
 
     }
@@ -84,8 +84,137 @@ void Table::Row::append(string name, float val) {
 void Table::Row::append(string name, MemberFunction mb_fn) {
     if (this->find(name) == this->end()) {
         auto* item = new member_Prototype(mb_fn);
-        item->identity = Prototype_Engine::MakeID(name);
+        item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
 
+    }
+}
+
+void Table::Row::commit(string name, string val, ETYPE etype) {
+    // TODO ( this->commit(name, parse(val, etype)) );
+}
+
+void Table::Row::commit(string name, Prototype *item) {
+    item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
+    (*this)[name] = item;
+}
+
+// TODO: replace these fillins with '<', '>', '==', '>=', '<=', '!='
+bool StrComparison(Prototype* prototype, string value) {
+    return true;
+}
+// TODO: replace these fillins with '<', '>', '==', '>=', '<=', '!='
+bool IntComparison(Prototype* prototype, int value) {
+    return true;
+}
+// TODO: replace these fillins with '<', '>', '==', '>=', '<=', '!='
+bool FloatComparison(Prototype* prototype, float value) {
+    return true;
+}
+// TODO: replace these fillins with '<', '>', '==', '>=', '<=', '!='
+bool BoolComparison(Prototype* prototype, bool value) {
+    return true;
+}
+
+// TODO: test and VALIDATE cursor / searchDepth iteration count
+void Table::Data_Structure::AttemptToTriggerEvent(string name, string val) {
+    // Search the search queries bound to events for commits
+    // Remember the search depth
+    // Use the search depth and go to the destination and go up by that depth amount and has() with the query from there to double check that the commit has a match
+
+    for (auto const&[eventName, query] : Prototype_Engine::prototypeEngine->boundQueries_by_tag) {
+        auto searchDepth = -1;
+
+        auto searchResult = query->search(name, val, StrComparison, searchDepth);
+
+        if (searchResult.subvalues_col->empty())
+            continue;
+
+        auto* cursor = this->parent;
+
+        for (int i = 0; i < searchDepth; i++) {
+            cursor = cursor->parent;
+        }
+
+        auto hasQuery = cursor->has(query);
+
+        if (hasQuery) {
+            Event::Trigger(eventName, cursor);
+        }
+    }
+}
+
+// TODO: test and VALIDATE cursor / searchDepth iteration count
+void Table::Data_Structure::AttemptToTriggerEvent(string name, int val) {
+    // Search the search queries bound to events for commits
+    // Remember the search depth
+    // Use the search depth and go to the destination and go up by that depth amount and has() with the query from there to double check that the commit has a match
+
+    for (auto const&[eventName, query] : Prototype_Engine::prototypeEngine->boundQueries_by_tag) {
+        auto searchDepth = -1;
+
+        query->search(name, val, IntComparison, searchDepth);
+
+        auto* cursor = this->parent;
+
+        for (int i = 0; i < searchDepth; i++) {
+            cursor = cursor->parent;
+        }
+
+        auto hasQuery = cursor->has(query);
+
+        if (hasQuery) {
+            Event::Trigger(eventName, cursor);
+        }
+    }
+}
+
+// TODO: test and VALIDATE cursor / searchDepth iteration count
+void Table::Data_Structure::AttemptToTriggerEvent(string name, float val) {
+    // Search the search queries bound to events for commits
+    // Remember the search depth
+    // Use the search depth and go to the destination and go up by that depth amount and has() with the query from there to double check that the commit has a match
+
+    for (auto const&[eventName, query] : Prototype_Engine::prototypeEngine->boundQueries_by_tag) {
+        auto searchDepth = -1;
+
+        query->search(name, val, FloatComparison, searchDepth);
+
+        auto* cursor = this->parent;
+
+        for (int i = 0; i < searchDepth; i++) {
+            cursor = cursor->parent;
+        }
+
+        auto hasQuery = cursor->has(query);
+
+        if (hasQuery) {
+            Event::Trigger(eventName, cursor);
+        }
+    }
+}
+
+// TODO: test and VALIDATE cursor / searchDepth iteration count
+void Table::Data_Structure::AttemptToTriggerEvent(string name, bool val) {
+    // Search the search queries bound to events for commits
+    // Remember the search depth
+    // Use the search depth and go to the destination and go up by that depth amount and has() with the query from there to double check that the commit has a match
+
+    for (auto const&[eventName, query] : Prototype_Engine::prototypeEngine->boundQueries_by_tag) {
+        auto searchDepth = -1;
+
+        query->search(name, val, BoolComparison, searchDepth);
+
+        auto* cursor = this->parent;
+
+        for (int i = 0; i < searchDepth; i++) {
+            cursor = cursor->parent;
+        }
+
+        auto hasQuery = cursor->has(query);
+
+        if (hasQuery) {
+            Event::Trigger(eventName, cursor);
+        }
     }
 }

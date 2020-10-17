@@ -12,11 +12,19 @@
 class Prototype_Engine {
 public:
     map<string, vector<int>> id_by_name;
+    map<string, vector<Prototype*>> ptr_by_name;
+    map<Prototype*, string> name_by_ptr;
     vector<string> name_by_id;
+
+    map<string, Prototype*> boundQueries_by_tag;
 
     static unsigned int IDENTITY;
 
     static Prototype_Engine* prototypeEngine;
+
+    void RegisterPrototype(string name, Prototype* prototype);
+
+    void Bind(string name, Prototype* query, bool override);
 
     static void End() {
         delete prototypeEngine;
@@ -27,15 +35,7 @@ public:
         }
     }
 
-    static unsigned int MakeID(string name) {
-        if (prototypeEngine->id_by_name.find(name) == prototypeEngine->id_by_name.end()) {
-            prototypeEngine->id_by_name[name] = vector<int>();
-        }
-        prototypeEngine->id_by_name[name].push_back(prototypeEngine->name_by_id.size());
-        prototypeEngine->name_by_id.push_back(name);
-
-        return prototypeEngine->name_by_id.size() - 1;
-    }
+    unsigned int MakeID(string name, Prototype* item);
 };
 
 

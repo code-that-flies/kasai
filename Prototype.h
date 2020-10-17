@@ -26,7 +26,7 @@ public:
 
     Prototype* parent = NULL;
     Table::Column * subvalues_col = nullptr;
-    Table::Row * subvalues_map  = nullptr;
+    Table::Row * subvalues_row  = nullptr;
     Comparator* comparison = nullptr;
 
     void append(string name, Prototype* value);
@@ -41,17 +41,19 @@ public:
 
 
     Prototype* _search(string name, ETYPE type, Comparator comparison);
-    Prototype* _search(string name, int value, Comparator comparison);
-    Prototype* _search(string name, float value, Comparator comparison);
-    Prototype* _search(string name, string value, Comparator comparison);
+    Prototype* _search(string name, int value, IntComparator comparison);
+    Prototype* _search(string name, float value, FloatComparator comparison);
+    Prototype* _search(string name, bool value, BoolComparator comparison);
+    Prototype* _search(string name, string value, StrComparator comparison);
 
     Prototype* _search(string tag);
 
 
-    Prototype search(string name, ETYPE type, Comparator comparison);
-    Prototype search(string name, int value, Comparator comparison);
-    Prototype search(string name, float value, Comparator comparison);
-    Prototype search(string name, string value, Comparator comparison);
+    Prototype search(string name, ETYPE type, Comparator comparison, int& searchDepth);
+    Prototype search(string name, int value, IntComparator comparison, int& searchDepth);
+    Prototype search(string name, float value, FloatComparator comparison, int& searchDepth);
+    Prototype search(string name, bool value, BoolComparator comparison, int& searchDepth);
+    Prototype search(string name, string value, StrComparator comparison, int& searchDepth);
 
     Prototype search(Prototype& query);
     Prototype search(string tag);

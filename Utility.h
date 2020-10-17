@@ -16,7 +16,7 @@ using std::map;
 class Prototype;
 
 enum class ETYPE {
-    STRING, INT, FLOAT, BOOL, MEMBER_FUNCTION, NONE = 0
+    STRING, INT, FLOAT, BOOL, MEMBER_FUNCTION, JSON, XML, KASAI, NONE = 0
 };
 
 enum E_MERGE_MODE {
@@ -24,6 +24,10 @@ enum E_MERGE_MODE {
 };
 
 typedef bool (*Comparator)(Prototype*, Prototype*);
+typedef bool (*StrComparator)(Prototype*, string);
+typedef bool (*IntComparator)(Prototype*, int);
+typedef bool (*FloatComparator)(Prototype*, float);
+typedef bool (*BoolComparator)(Prototype*, bool);
 typedef Prototype (*MemberFunction)(Prototype*, Prototype*);
 typedef Prototype& (*event_watcher)(const Prototype*);
 #endif //KASAI_UTILITY_H
