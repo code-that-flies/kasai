@@ -11,6 +11,7 @@ using std::vector;
 
 template <class T>
 class Feed : public vector<T> {
+public:
     typedef void (*Processor)(T);
     vector<Processor> feed_scanning_processors;
 

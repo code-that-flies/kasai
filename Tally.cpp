@@ -91,8 +91,8 @@ void Tally::Initialize() {
     push_back(' ', "Space");
     push_back('\t', "Tab");
     push_back('\r', "Carriage Return");
-    group_names[Pattern::MatchLetter] = "Letter";
-    group_names[Pattern::MatchNumber] = "Number";
+//    group_names[Pattern::MatchLetter] = "Letter";
+//    group_names[Pattern::MatchNumber] = "Number";
 }
 
 void Tally::push_back(char character, string name) {
