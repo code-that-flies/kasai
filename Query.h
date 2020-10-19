@@ -27,10 +27,13 @@ public:
 
         bool In(T queryValue, T rawValue);
 
+        // Returns the reverse of In
+        // ( AKA a 'built' [default] value as *output* )
         T Reverse();
     };
 
-    // Each query has a given matchmaker. This is the definition of a matchmaker!
+    // Each query has a given matchmaker.
+    // This is the definition of a matchmaker!
     typedef bool (*Matchmaker)(T raw[], int& rawIndex, T query[], int& queryIndex, bool inverted, Range* range);
 
     // Each query is an array of characters. Any of them being a match is a local 'success'
@@ -50,9 +53,7 @@ public:
 
     vector<Query> OR_queries;
     vector<Query> AND_queries;
-    // Each antiQuery is an array of character. Any of them being a match is a total and overall 'fail'
-    vector<Query> antiQueries;
-
+    vector<Query> NOT_queries;
 
     static void Slice(T raw[], T result[], unsigned int start, unsigned int length);
 
@@ -64,7 +65,6 @@ public:
 
     vector<T> GenerateDefault() {
         vector<T> result;
-
 
         if (prefixes.size() > 0)
             Merge(result, prefixes);
@@ -85,6 +85,8 @@ public:
 
     bool TryMatch(T raw[], int currentRawCharacter, int& currentQueryCharacter, int& currentQuery, int direction, int offset);
 
+    // Returns the reverse of match
+    // (aka a re-'built' array)
     vector<T> Reverse(T input[]);
 
     // Returns -1 is the match is a fail, returns the end position if the match is a 'success' overall
@@ -170,7 +172,7 @@ int Query<T>::Match(T *raw, int currentRawCharacter, int &currentQueryCharacter,
         return -1;
 
     // If an antiQuery succceeds, the query fails
-    auto antiqueriesResult = TrySubqueries(raw, currentRawCharacter, currentQueryCharacter, currentQuery, direction, antiQueries);
+    auto antiqueriesResult = TrySubqueries(raw, currentRawCharacter, currentQueryCharacter, currentQuery, direction, NOT_queries);
     if (antiqueriesResult != -1)
         return -1;
 
