@@ -30,20 +30,29 @@ public:
         T Reverse();
     };
 
+    // Each query has a given matchmaker. This is the definition of a matchmaker!
     typedef bool (*Matchmaker)(T raw[], int& rawIndex, T query[], int& queryIndex, bool inverted, Range* range);
 
     // Each query is an array of characters. Any of them being a match is a local 'success'
     vector<T[]> queries;
-    // Each antiQuery is an array of character. Any of them being a match is a total and overall 'fail'
-    vector<Query> antiQueries;
+    // Each query has a given matchmaker
     vector<Matchmaker> matchmakers;
+    // Each given matchmaker may return
+    // the opposite of what it is normally calculating if 'isInvetreds[currentQuery] == true'
     vector<bool> isInverteds;
-    vector<T[]> prefixes;
-    vector<Query> peeks;
-    vector<Query> OR_queries;
-    vector<Query> AND_queries;
     vector<int> repeatAmounts;
     map<int, Range> ranges;
+
+    // Prefixes are before the match and peeks are after the match
+    // (peeks will interrupt a -1 (aka unlimited) length repeat if matched successfully)
+    vector<T[]> prefixes;
+    vector<Query> peeks;
+
+    vector<Query> OR_queries;
+    vector<Query> AND_queries;
+    // Each antiQuery is an array of character. Any of them being a match is a total and overall 'fail'
+    vector<Query> antiQueries;
+
 
     static void Slice(T raw[], T result[], unsigned int start, unsigned int length);
 
