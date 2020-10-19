@@ -179,7 +179,7 @@ int Query<T>::Match(T *raw, int currentRawCharacter, int &currentQueryCharacter,
                        && offset < raw->size()
                        && offset > 0)  {
 
-                    auto peeks_result = TrySubqueries(raw, currentRawCharacter, currentQueryCharacter, currentQuery, direction, peeks);
+                    auto peeks_result = TrySubqueries(raw, currentRawCharacter + offset, currentQueryCharacter, currentQuery, direction, peeks);
                     if (peeks_result != -1)
                         return peeks_result;
                 }
