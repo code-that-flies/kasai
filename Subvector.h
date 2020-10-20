@@ -21,7 +21,7 @@ template <class T>
 class Subvector : public TUtil<T>::Range, public IReversible {
 public:
     int layer;
-    vector<Subvector<T>*> subarrays;
+    vector<Subvector<T>*> subvectors;
     vector<string> tags;
     static const bool isClip = false;
 
@@ -38,7 +38,7 @@ public:
 
     void render_with_tags(vector<pair<string, T>> *result, const vector<T>& raw);
 
-    vector<T> Reverse(vector<T> toReplaceWith, const vector<T>& raw, int& prevSubstringEnd);
+    vector<T> Reverse(vector<T> toReplaceWith, const vector<T>& raw, int& prevSubvectorEnd);
 
     bool Contains(int index);
 
@@ -59,7 +59,7 @@ Subvector<T>::Subvector(int start, int end) {
 
 template<class T>
 Subvector<T>::~Subvector() {
-    for (auto val : subarrays) {
+    for (auto val : subvectors) {
         delete val;
     }
 }
@@ -67,7 +67,7 @@ Subvector<T>::~Subvector() {
 template<class T>
 void Subvector<T>::new_layer() {
     layer++;
-    for (Subvector* subarray : subarrays) {
+    for (Subvector* subarray : subvectors) {
         subarray->new_layer();
     }
 }
@@ -82,7 +82,7 @@ bool Subvector<T>::_push_back(int start, int end, string tag) {
 
     }
     auto result = new Subvector(start, end);
-    subarrays.push_back(result);
+    subvectors.push_back(result);
     SetTag(tag);
     return true;
 }
@@ -95,7 +95,7 @@ bool Subvector<T>::push_back(int start, int end, string tag) {
         _push_back(start, end, tag);
     }
     else if (layer > 1) {
-        for (auto val : subarrays) {
+        for (auto val : subvectors) {
             if (!val->tags.empty()) {
                 if (val->Contains(start) || val->Contains(end)) {
                     return false;
@@ -124,11 +124,11 @@ template<class T>
 void Subvector<T>::render(vector<vector<T>> *result, const vector<T>& raw, string tag) {
 
     if (tag != "") {
-        for (Subvector* subarray : subarrays) {
+        for (Subvector* subarray : subvectors) {
             subarray->render(result, raw);
         }
 
-        if (subarrays.empty() && layer < 2 && GetTag() == tag) {
+        if (subvectors.empty() && layer < 2 && GetTag() == tag) {
             vector<T> subresult;
             TUtil<T>::Slice(raw, subresult, this->min, this->max - this->min);
             result->push_back(subresult);
@@ -136,11 +136,11 @@ void Subvector<T>::render(vector<vector<T>> *result, const vector<T>& raw, strin
         }
     }
     else {
-        for (Subvector* subarray : subarrays) {
+        for (Subvector* subarray : subvectors) {
             subarray->render(result, raw);
         }
 
-        if (subarrays.empty() && layer < 2 && GetTag() == tag) {
+        if (subvectors.empty() && layer < 2 && GetTag() == tag) {
 
             vector<T> subresult;
             TUtil<T>::Slice(raw, subresult, this->min, this->max - this->min);
@@ -150,21 +150,21 @@ void Subvector<T>::render(vector<vector<T>> *result, const vector<T>& raw, strin
 }
 
 template<class T>
-vector<T> Subvector<T>::Reverse(vector<T> toReplaceWith, const vector<T>& raw, int &prevSubstringEnd) {
-    auto _prevSubstringEnd = prevSubstringEnd;
+vector<T> Subvector<T>::Reverse(vector<T> toReplaceWith, const vector<T>& raw, int &prevSubvectorEnd) {
+    auto _prevSubvectorEnd = prevSubvectorEnd;
     if (layer > 1) {
         vector<T> result;
-        for (int index = 0; index < subarrays.size(); index++) {
-            auto current = subarrays[index];
-            TUtil<T>::Merge(result, current->Reverse(toReplaceWith, raw, prevSubstringEnd));
+        for (int index = 0; index < subvectors.size(); index++) {
+            auto current = subvectors[index];
+            TUtil<T>::Merge(result, current->Reverse(toReplaceWith, raw, prevSubvectorEnd));
         }
 
         return result;
     }
-    else if (subarrays.empty()) {
-        prevSubstringEnd = this->max;
-        if (_prevSubstringEnd > 0)
-            return TUtil<T>::Merge(TUtil<T>::Slice(raw, _prevSubstringEnd, this->min - _prevSubstringEnd), toReplaceWith);
+    else if (subvectors.empty()) {
+        prevSubvectorEnd = this->max;
+        if (_prevSubvectorEnd > 0)
+            return TUtil<T>::Merge(TUtil<T>::Slice(raw, _prevSubvectorEnd, this->min - _prevSubvectorEnd), toReplaceWith);
         else
             return TUtil<T>::Merge(TUtil<T>::Slice(raw, 0, this->min), toReplaceWith);
     }
@@ -201,13 +201,13 @@ string Subvector<T>::GetTag(int index) {
 
 template<class T>
 void Subvector<T>::render_with_tags(vector<pair<string, T>> *result, const vector<T>& raw) {
-    for (Subvector* subarray : subarrays) {
+    for (Subvector* subarray : subvectors) {
         subarray->render_with_tags(result, raw);
     }
 
     auto tag = GetTag();
     if (tag != "") {
-        if (subarrays.empty() && layer < 2) {
+        if (subvectors.empty() && layer < 2) {
             vector<char> array;
             result->push_back(pair(tag, TUtil<T>::Slice(raw, array, this->min, this->max - this->min)));
         }
