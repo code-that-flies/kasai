@@ -18,7 +18,7 @@ using std::map;
 using std::pair;
 
 template <class T>
-class Subvector : public TUtil<T>::Range, public IReversible {
+class Subvector : public TUtil<int>::Range, public IReversible {
 public:
     int layer;
     vector<Subvector<T>*> subvectors;
@@ -38,9 +38,10 @@ public:
 
     void render_with_tags(vector<pair<string, T>> *result, const vector<T>& raw);
 
-    vector<T> Reverse(vector<T> toReplaceWith, const vector<T>& raw, int& prevSubvectorEnd);
 
-    bool Contains(int index);
+    // Produces the reverse of render, reproducing a raw
+    // but using the given replacements instead of the original matches
+    vector<T> Reverse(vector<T> toReplaceWith, const vector<T>& raw, int& prevSubvectorEnd);
 
     string GetTag(int index=0);
 
@@ -97,12 +98,12 @@ bool Subvector<T>::push_back(int start, int end, string tag) {
     else if (layer > 1) {
         for (auto val : subvectors) {
             if (!val->tags.empty()) {
-                if (val->Contains(start) || val->Contains(end)) {
+                if (val->In(start) || val->In(end)) {
                     return false;
                 }
             }
 
-            if (val->Contains(start) && val->Contains(end)) {
+            if (val->In(start) && val->In(end)) {
                 if (val->max < end) {
                     if (isClip)
                         end = val->max;
@@ -172,11 +173,6 @@ vector<T> Subvector<T>::Reverse(vector<T> toReplaceWith, const vector<T>& raw, i
         return vector<T>();
     }
 
-}
-
-template<class T>
-bool Subvector<T>::Contains(int index) {
-    return index >= this->min && index <= this->max;
 }
 
 template<class T>

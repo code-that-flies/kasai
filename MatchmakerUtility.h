@@ -5,7 +5,7 @@
 #ifndef KASAI_MATCHMAKERUTILITY_H
 #define KASAI_MATCHMAKERUTILITY_H
 
-// Include all from /Matchmakers/*
+// Include all from /matchmakers/*
 
 
 #endif //KASAI_MATCHMAKERUTILITY_H

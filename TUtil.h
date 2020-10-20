@@ -35,6 +35,8 @@ public:
 
         bool In(T queryValue, T rawValue);
 
+        bool In(T value);
+
         // Returns the reverse of In
         // ( AKA a 'built' [default] value as *output* )
         T Reverse();
@@ -100,6 +102,11 @@ T TUtil<T>::Range::Reverse() {
 
 template<class T>
 TUtil<T>::Range::Range() : relative(false) {
+}
+
+template<class T>
+bool TUtil<T>::Range::In(T value) {
+    return index >= this->min && index <= this->max;
 }
 
 
