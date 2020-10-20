@@ -2,6 +2,6 @@
 // Created by Nathaniel Blair on 5/10/20.
 //
 
-#include "Subarray.h"
+#include "Subvector.h"
 #include "Query.h"
-#include "ArrayUtility.h"
+#include "TUtil.h"

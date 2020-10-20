@@ -7,7 +7,7 @@
 
 #include "Query.h"
 #include "Utility.h"
-#include "ArrayUtility.h"
+#include "TUtil.h"
 #include "MatchmakerUtility.h"
 #include "IReversible.h"
 
@@ -17,28 +17,9 @@ template <class T>
 class Query : public IReversible {
 public:
 
-
-    class Range : public IReversible {
-    public:
-        T min;
-        T max;
-        bool relative;
-        T defaultValue;
-
-        Range(T min, T max, bool relative, T defaultValue);
-
-        Range();
-
-        bool In(T queryValue, T rawValue);
-
-        // Returns the reverse of In
-        // ( AKA a 'built' [default] value as *output* )
-        T Reverse();
-    };
-
     // Each query has a given matchmaker.
     // This is the definition of a matchmaker!
-    typedef bool (*Matchmaker)(const vector<T>& raw, int& rawIndex, vector<T>& query, int& queryIndex, bool inverted, Range* range);
+    typedef bool (*Matchmaker)(const vector<T>& raw, int& rawIndex, vector<T>& query, int& queryIndex, bool inverted, typename TUtil<T>::Range* range);
 
     // Query is an array of characters.
     // Being a match is a local 'success'
@@ -49,7 +30,7 @@ public:
     // the opposite of what it is normally calculating if 'isInvetreds[currentQuery] == true'
     vector<bool> isInverteds;
     vector<int> repeatAmounts;
-    map<int, Range> ranges;
+    map<int, typename TUtil<T>::Range> ranges;
 
     // Tags are used to:
     // generate Abstract Data Trees such as Abstract Syntax Trees
@@ -70,7 +51,7 @@ public:
 
     void AddPrefix(vector<T> prefix);
 
-    void Add(T queryValue, Matchmaker matchmaker, bool isInverted, Range* range);
+    void Add(T queryValue, Matchmaker matchmaker, bool isInverted, typename TUtil<T>::Range* range);
 
     int TrySubqueries(T * raw, int currentRawCharacter, int currentQueryCharacter, int& currentQuery, int& direction, vector<Query>& queries);
 
@@ -80,7 +61,7 @@ public:
     // (aka a re-'built' array)
     vector<T> Reverse(T input[]);
 
-    // Returns -1 is the match is a fail, returns the end position if the match is a 'success' overall
+    // Returns -1 is the match is a fail, returns the max position if the match is a 'success' overall
     int Match(const vector<T>& raw, int currentRawCharacter, int& currentQueryCharacter, int& currentQuery, int& direction);
 };
 
@@ -130,7 +111,7 @@ int Query<T>::Match(const vector<T>& raw, int currentRawCharacter, int &currentQ
         for (auto& prefix : prefixes) {
             if (currentRawCharacter > prefix.size()) {
                 vector<T> potentialPrefix;
-                if (ArrayUtility<T>::Slice(raw, potentialPrefix, currentRawCharacter - prefix.size(), prefix.size()) == prefix ) {
+                if (TUtil<T>::Slice(raw, potentialPrefix, currentRawCharacter - prefix.size(), prefix.size()) == prefix ) {
                     prefix_result = true;
                     break;
                 }
@@ -186,7 +167,7 @@ int Query<T>::Match(const vector<T>& raw, int currentRawCharacter, int &currentQ
 }
 
 template<class T>
-void Query<T>::Add(T queryValue, Query::Matchmaker matchmaker, bool isInverted, Query::Range *range) {
+void Query<T>::Add(T queryValue, Query::Matchmaker matchmaker, bool isInverted, typename TUtil<T>::Range *range) {
     query.push_back(queryValue);
     matchmakers.push_back(matchmaker);
     isInverteds.push_back(isInverted);
@@ -220,39 +201,6 @@ vector<T> Query<T>::GenerateDefault() {
     Merge(result, suffixes[0].GenerateDefault());
 
     return result;
-}
-template<class T>
-bool Query<T>::Range::In(T queryValue, T rawValue) {
-    if (relative) {
-        if ((queryValue - min) <= rawValue && (max + queryValue) >= rawValue) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    else {
-        if (rawValue >= min && rawValue <= max) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-}
-
-template<class T>
-Query<T>::Range::Range(T min, T max, bool relative, T defaultValue)
-        : min(min), max(max), relative(relative), defaultValue(defaultValue) {
-}
-
-template<class T>
-T Query<T>::Range::Reverse() {
-    return defaultValue;
-}
-
-template<class T>
-Query<T>::Range::Range() : relative(false) {
 }
 
 #endif //KASAI_QUERY_H

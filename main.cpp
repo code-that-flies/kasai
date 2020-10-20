@@ -9,7 +9,7 @@
 using std::string;
 using std::vector;
 
-#include "Subarray.h"
+#include "Subvector.h"
 #include "Query.h"
 
 template <typename T>
@@ -114,13 +114,13 @@ int main() {
 */
 //     typedef bool (*Matchmaker)(const vector<T>& raw, int& rawIndex, vector<T>& query, int& queryIndex, bool inverted, Range* range);
 
-bool MatchMakkr320(const vector<char>& raw, int& rawIndex, vector<char>& query, int& queryIndex, bool inverted, Query<char>::Range* range) {
+bool MatchMakkr320(const vector<char>& raw, int& rawIndex, vector<char>& query, int& queryIndex, bool inverted, TUtil<char>::Range* range) {
     return true;
 }
 
 int main() {
     // TODO: add asserts to test here
-    Subarray<char> test(0, 10);
+    Subvector<char> test(0, 10);
     vector<vector<char>> result;
     vector<char> chars = {'a', 'b', 'c'};
     test.render(&result, chars, "test2");
