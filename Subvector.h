@@ -38,7 +38,6 @@ public:
 
     void render_with_tags(vector<pair<string, T>> *result, const vector<T>& raw);
 
-
     // Produces the reverse of render, reproducing a raw
     // but using the given replacements instead of the original matches
     vector<T> Reverse(vector<T> toReplaceWith, const vector<T>& raw, int& prevSubvectorEnd);

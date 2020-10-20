@@ -4,9 +4,9 @@
 
 #include "Table.h"
 #include "Prototype.h"
-#include "typed_Prototype.h"
-#include "member_Prototype.h"
-#include "Prototype_Engine.h"
+#include "TypedPrototype.h"
+#include "MemberPrototype.h"
+#include "PrototypeEngine.h"
 
 
 // TODO
@@ -21,24 +21,24 @@ Table::Column::~Column() {
 }
 
 void Table::Column::append(string val) {
-    push_back(new typed_Prototype<string>(val, ETYPE::STRING));
+    push_back(new TypedPrototype<string>(val, ETYPE::STRING));
 }
 
 void Table::Column::append(int val) {
 
-    push_back(new typed_Prototype<int>(val, ETYPE::INT));
+    push_back(new TypedPrototype<int>(val, ETYPE::INT));
 }
 
 void Table::Column::append(float val) {
-    push_back(new typed_Prototype<float>(val,ETYPE::FLOAT));
+    push_back(new TypedPrototype<float>(val, ETYPE::FLOAT));
 }
 
 void Table::Column::append(bool val) {
-    push_back(new typed_Prototype<bool>(val,ETYPE::BOOL));
+    push_back(new TypedPrototype<bool>(val, ETYPE::BOOL));
 }
 
 void Table::Column::append(MemberFunction mb_fn) {
-    push_back(new member_Prototype(mb_fn));
+    push_back(new MemberPrototype(mb_fn));
 }
 
 Table::Column::Column() {
@@ -48,16 +48,16 @@ Table::Column::Column() {
 
 void Table::Row::append(string name, string val, bool override) {
     if (this->find(name) == this->end() || override) {
-        auto* item = new typed_Prototype<string>(val, ETYPE::STRING);
-        item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
+        auto* item = new TypedPrototype<string>(val, ETYPE::STRING);
+        item->identity = PrototypeEngine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
     }
 }
 
 void Table::Row::append(string name, bool val, bool override) {
     if (this->find(name) == this->end() || override) {
-        auto* item = new typed_Prototype<bool>(val, ETYPE::BOOL);
-        item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
+        auto* item = new TypedPrototype<bool>(val, ETYPE::BOOL);
+        item->identity = PrototypeEngine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
 
     }
@@ -65,8 +65,8 @@ void Table::Row::append(string name, bool val, bool override) {
 
 void Table::Row::append(string name, int val, bool override) {
     if (this->find(name) == this->end() || override) {
-        auto* item =  new typed_Prototype<int>(val, ETYPE::INT);
-        item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
+        auto* item =  new TypedPrototype<int>(val, ETYPE::INT);
+        item->identity = PrototypeEngine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
 
     }
@@ -74,8 +74,8 @@ void Table::Row::append(string name, int val, bool override) {
 
 void Table::Row::append(string name, float val, bool override) {
     if (this->find(name) == this->end() || override) {
-        auto* item = new typed_Prototype<float>(val, ETYPE::FLOAT);
-        item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
+        auto* item = new TypedPrototype<float>(val, ETYPE::FLOAT);
+        item->identity = PrototypeEngine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
 
     }
@@ -83,8 +83,8 @@ void Table::Row::append(string name, float val, bool override) {
 
 void Table::Row::append(string name, MemberFunction mb_fn, bool override) {
     if (this->find(name) == this->end() || override) {
-        auto* item = new member_Prototype(mb_fn);
-        item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
+        auto* item = new MemberPrototype(mb_fn);
+        item->identity = PrototypeEngine::prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
 
     }
@@ -97,7 +97,7 @@ void Table::Row::commit(string name, string val, ETYPE etype) {
 
 // Override is always
 void Table::Row::commit(string name, Prototype *item) {
-    item->identity = Prototype_Engine::prototypeEngine->MakeID(name, item);
+    item->identity = PrototypeEngine::prototypeEngine->MakeID(name, item);
     (*this)[name] = item;
 }
 
@@ -124,7 +124,7 @@ void Table::Data_Structure::AttemptToTriggerEvent(string name, string val) {
     // Remember the search depth
     // Use the search depth and go to the destination and go up by that depth amount and has() with the query from there to double check that the commit has a match
 
-    for (auto const&[eventName, query] : Prototype_Engine::prototypeEngine->boundQueries_by_tag) {
+    for (auto const&[eventName, query] : PrototypeEngine::prototypeEngine->boundQueries_by_tag) {
         auto searchDepth = -1;
 
         auto searchResult = query->search(name, val, StrComparison, searchDepth);
@@ -152,7 +152,7 @@ void Table::Data_Structure::AttemptToTriggerEvent(string name, int val) {
     // Remember the search depth
     // Use the search depth and go to the destination and go up by that depth amount and has() with the query from there to double check that the commit has a match
 
-    for (auto const&[eventName, query] : Prototype_Engine::prototypeEngine->boundQueries_by_tag) {
+    for (auto const&[eventName, query] : PrototypeEngine::prototypeEngine->boundQueries_by_tag) {
         auto searchDepth = -1;
 
         query->search(name, val, IntComparison, searchDepth);
@@ -177,7 +177,7 @@ void Table::Data_Structure::AttemptToTriggerEvent(string name, float val) {
     // Remember the search depth
     // Use the search depth and go to the destination and go up by that depth amount and has() with the query from there to double check that the commit has a match
 
-    for (auto const&[eventName, query] : Prototype_Engine::prototypeEngine->boundQueries_by_tag) {
+    for (auto const&[eventName, query] : PrototypeEngine::prototypeEngine->boundQueries_by_tag) {
         auto searchDepth = -1;
 
         query->search(name, val, FloatComparison, searchDepth);
@@ -202,7 +202,7 @@ void Table::Data_Structure::AttemptToTriggerEvent(string name, bool val) {
     // Remember the search depth
     // Use the search depth and go to the destination and go up by that depth amount and has() with the query from there to double check that the commit has a match
 
-    for (auto const&[eventName, query] : Prototype_Engine::prototypeEngine->boundQueries_by_tag) {
+    for (auto const&[eventName, query] : PrototypeEngine::prototypeEngine->boundQueries_by_tag) {
         auto searchDepth = -1;
 
         query->search(name, val, BoolComparison, searchDepth);

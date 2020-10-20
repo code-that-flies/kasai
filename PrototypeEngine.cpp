@@ -2,13 +2,13 @@
 // Created by Nathaniel Blair on 14/10/20.
 //
 
-#include "Prototype_Engine.h"
+#include "PrototypeEngine.h"
 #include "Prototype.h"
 
-Prototype_Engine* Prototype_Engine::prototypeEngine = new Prototype_Engine();
-unsigned int Prototype_Engine::IDENTITY = 0;
+PrototypeEngine* PrototypeEngine::prototypeEngine = new PrototypeEngine();
+unsigned int PrototypeEngine::IDENTITY = 0;
 
-void Prototype_Engine::RegisterPrototype(string name, Prototype *prototype) {
+void PrototypeEngine::RegisterPrototype(string name, Prototype *prototype) {
     if (this->ptr_by_name.find(name) == this->ptr_by_name.end()) {
         this->ptr_by_name[name] = vector<Prototype*>();
     }
@@ -17,7 +17,7 @@ void Prototype_Engine::RegisterPrototype(string name, Prototype *prototype) {
     name_by_ptr[prototype] = name;
 }
 
-unsigned int Prototype_Engine::MakeID(string name, Prototype *item) {
+unsigned int PrototypeEngine::MakeID(string name, Prototype *item) {
     if (this->id_by_name.find(name) == this->id_by_name.end()) {
         this->id_by_name[name] = vector<int>();
     }
@@ -30,7 +30,7 @@ unsigned int Prototype_Engine::MakeID(string name, Prototype *item) {
     return this->name_by_id.size() - 1;
 }
 
-void Prototype_Engine::Bind(string name, Prototype * query, bool overwrite) {
+void PrototypeEngine::Bind(string name, Prototype * query, bool overwrite) {
     if (boundQueries_by_tag.find(name) == boundQueries_by_tag.end())
         boundQueries_by_tag[name] = query;
     else if (overwrite)

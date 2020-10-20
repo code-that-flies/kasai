@@ -2,8 +2,8 @@
 // Created by Nathaniel Blair on 27/9/20.
 //
 
-#ifndef KASAI_TYPED_PROTOTYPE_H
-#define KASAI_TYPED_PROTOTYPE_H
+#ifndef KASAI_TYPEDPROTOTYPE_H
+#define KASAI_TYPEDPROTOTYPE_H
 
 #include <map>
 #include <string>
@@ -15,17 +15,17 @@ using std::string;
 
 
 template <class T>
-class typed_Prototype : public Prototype {
+class TypedPrototype : public Prototype {
 public:
 //    static T defaultValue;
     T value;
 
-//    typed_Prototype() : value(defaultValue) {
+//    TypedPrototype() : value(defaultValue) {
 //
 //    };
 
-    typed_Prototype<T>(T val, ETYPE etype);
-    typed_Prototype<T>(Prototype* parent, T val, ETYPE etype);
+    TypedPrototype<T>(T val, ETYPE etype);
+    TypedPrototype<T>(Prototype* parent, T val, ETYPE etype);
 
 
 
@@ -40,13 +40,13 @@ public:
 };
 
 template<class T>
-typed_Prototype<T>::typed_Prototype(T val, ETYPE etype) : value(val) {
+TypedPrototype<T>::TypedPrototype(T val, ETYPE etype) : value(val) {
     this->etype = etype;
 }
 
 template<class T>
-typed_Prototype<T>::typed_Prototype(Prototype *parent, T val, ETYPE etype) : value(val) {
+TypedPrototype<T>::TypedPrototype(Prototype *parent, T val, ETYPE etype) : value(val) {
     this->parent = parent;
 }
 
-#endif //KASAI_TYPED_PROTOTYPE_H
+#endif //KASAI_TYPEDPROTOTYPE_H

@@ -3,7 +3,7 @@
 //
 
 #include "Prototype.h"
-#include "typed_Prototype.h"
+#include "TypedPrototype.h"
 
 struct isValue
 {
@@ -25,16 +25,16 @@ struct isValue
         if (prototype->etype == ETYPE::NONE)
             return false;
         else if (prototype->etype == ETYPE::STRING) {
-            return ((typed_Prototype<string>*)prototype)->value == s_value;
+            return ((TypedPrototype<string>*)prototype)->value == s_value;
         }
         else if (prototype->etype == ETYPE::INT) {
-            return ((typed_Prototype<int>*)prototype)->value == i_value;
+            return ((TypedPrototype<int>*)prototype)->value == i_value;
         }
         else if (prototype->etype == ETYPE::FLOAT) {
-            return ((typed_Prototype<float>*)prototype)->value == f_value;
+            return ((TypedPrototype<float>*)prototype)->value == f_value;
         }
         else if (prototype->etype == ETYPE::BOOL) {
-            return ((typed_Prototype<bool>*)prototype)->value == b_value;
+            return ((TypedPrototype<bool>*)prototype)->value == b_value;
         }
     }
 };
@@ -279,13 +279,13 @@ void Prototype::_merge_subprototype(string name, Prototype *foreign, E_MERGE_MOD
         case E_MERGE_MODE::AVERAGE: {
             switch (foreign->etype) {
                 case ETYPE::FLOAT: {
-                    auto val = ((typed_Prototype<float>*)(*subvalues_row)[name])->value;
-                    ((typed_Prototype<float>*)(*subvalues_row)[name])->value = (val + ((typed_Prototype<float>*)foreign)->value ) / 2;
+                    auto val = ((TypedPrototype<float>*)(*subvalues_row)[name])->value;
+                    ((TypedPrototype<float>*)(*subvalues_row)[name])->value = (val + ((TypedPrototype<float>*)foreign)->value ) / 2;
                     break;
                 }
                 case ETYPE::INT: {
-                    auto val = ((typed_Prototype<int>*)(*subvalues_row)[name])->value;
-                    ((typed_Prototype<int>*)(*subvalues_row)[name])->value = (val + ((typed_Prototype<float>*)foreign)->value ) / 2;
+                    auto val = ((TypedPrototype<int>*)(*subvalues_row)[name])->value;
+                    ((TypedPrototype<int>*)(*subvalues_row)[name])->value = (val + ((TypedPrototype<float>*)foreign)->value ) / 2;
                     break;
                 }
             }
@@ -304,15 +304,15 @@ void Prototype::_merge_subprototype(string name, Prototype *foreign, E_MERGE_MOD
         case E_MERGE_MODE::RIGHT_INNER: {
             switch (foreign->etype) {
                 case ETYPE::FLOAT: {
-                    ((typed_Prototype<float>*)(*subvalues_row)[name])->value = ((typed_Prototype<float>*)foreign)->value;
+                    ((TypedPrototype<float>*)(*subvalues_row)[name])->value = ((TypedPrototype<float>*)foreign)->value;
                     break;
                 }
                 case ETYPE::INT: {
-                    ((typed_Prototype<int>*)(*subvalues_row)[name])->value = ((typed_Prototype<int>*)foreign)->value;
+                    ((TypedPrototype<int>*)(*subvalues_row)[name])->value = ((TypedPrototype<int>*)foreign)->value;
                     break;
                 }
                 case ETYPE::STRING: {
-                    ((typed_Prototype<string>*)(*subvalues_row)[name])->value = ((typed_Prototype<string>*)foreign)->value;
+                    ((TypedPrototype<string>*)(*subvalues_row)[name])->value = ((TypedPrototype<string>*)foreign)->value;
                     break;
                 }
 

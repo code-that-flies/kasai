@@ -3,8 +3,8 @@
 #include <vector>
 #include "Prototype.h"
 #include "Pattern.h"
-#include "typed_Prototype.h"
-#include "Prototype_Engine.h"
+#include "TypedPrototype.h"
+#include "PrototypeEngine.h"
 
 using std::string;
 using std::vector;
@@ -52,13 +52,13 @@ bool is_in(char value, string characters) {
 Prototype * _load(string raw, char type) {
     switch (type) {
         case 'f': {
-            auto* result = new typed_Prototype<float>(0, ETYPE::FLOAT);
+            auto* result = new TypedPrototype<float>(0, ETYPE::FLOAT);
             result->load(raw);
             return (Prototype*)result;
             break;
         }
         case 'i': {
-            auto* result2 = new typed_Prototype<int>(0, ETYPE::INT);
+            auto* result2 = new TypedPrototype<int>(0, ETYPE::INT);
             result2->load(raw);
             return (Prototype*)result2;
             break;
@@ -67,7 +67,7 @@ Prototype * _load(string raw, char type) {
 }
 
 Prototype * _load(string raw) {
-    auto* result = new typed_Prototype<string>("", ETYPE::STRING);
+    auto* result = new TypedPrototype<string>("", ETYPE::STRING);
     result->load(raw);
     return (Prototype*)result;
 }
@@ -131,6 +131,6 @@ int main() {
     for (auto item : result[0]) {
         std::cout << item;
     }
-    Prototype_Engine::End();
+    PrototypeEngine::End();
     return 0;
 }

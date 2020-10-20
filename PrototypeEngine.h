@@ -2,14 +2,14 @@
 // Created by Nathaniel Blair on 14/10/20.
 //
 
-#ifndef KASAI_PROTOTYPE_ENGINE_H
-#define KASAI_PROTOTYPE_ENGINE_H
+#ifndef KASAI_PROTOTYPEENGINE_H
+#define KASAI_PROTOTYPEENGINE_H
 
 #include "Utility.h"
 #include "Event.h"
 #include "File.h"
 
-class Prototype_Engine {
+class PrototypeEngine {
 public:
     map<string, vector<int>> id_by_name;
     map<string, vector<Prototype*>> ptr_by_name;
@@ -20,7 +20,7 @@ public:
 
     static unsigned int IDENTITY;
 
-    static Prototype_Engine* prototypeEngine;
+    static PrototypeEngine* prototypeEngine;
 
     void RegisterPrototype(string name, Prototype* prototype);
 
@@ -39,4 +39,4 @@ public:
 };
 
 
-#endif //KASAI_PROTOTYPE_ENGINE_H
+#endif //KASAI_PROTOTYPEENGINE_H
