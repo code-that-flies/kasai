@@ -7,6 +7,7 @@
 
 #include "Query.h"
 #include "Utility.h"
+#include "ArrayUtility.h"
 #include "MatchmakerUtility.h"
 #include "IReversible.h"
 
@@ -15,6 +16,7 @@
 template <class T>
 class Query : public IReversible {
 public:
+
 
     class Range : public IReversible {
     public:
@@ -25,6 +27,8 @@ public:
 
         Range(T min, T max, bool relative, T defaultValue);
 
+        Range();
+
         bool In(T queryValue, T rawValue);
 
         // Returns the reverse of In
@@ -34,10 +38,11 @@ public:
 
     // Each query has a given matchmaker.
     // This is the definition of a matchmaker!
-    typedef bool (*Matchmaker)(T raw[], int& rawIndex, T query[], int& queryIndex, bool inverted, Range* range);
+    typedef bool (*Matchmaker)(const vector<T>& raw, int& rawIndex, vector<T>& query, int& queryIndex, bool inverted, Range* range);
 
-    // Each query is an array of characters. Any of them being a match is a local 'success'
-    vector<T[]> queries;
+    // Query is an array of characters.
+    // Being a match is a local 'success'
+    vector<T> query;
     // Each query has a given matchmaker
     vector<Matchmaker> matchmakers;
     // Each given matchmaker may return
@@ -46,40 +51,26 @@ public:
     vector<int> repeatAmounts;
     map<int, Range> ranges;
 
-    // Prefixes are before the match and peeks are after the match
-    // (peeks will interrupt a -1 (aka unlimited) length repeat if matched successfully)
-    vector<T[]> prefixes;
-    vector<Query> peeks;
+    // Tags are used to:
+    // generate Abstract Data Trees such as Abstract Syntax Trees
+    // decide which parts of a raw[] to ignore as "already tagged"
+    // and which parts of a raw[] to NOT ignore as "already tagged BUT with OVERLAPPING tags"
+    vector<string> tags;
+
+    // Prefixes are before the match and suffixes are after the match
+    // (Suffixes will interrupt a -1 (aka unlimited) length repeat if matched successfully)
+    vector<vector<T>> prefixes;
+    vector<Query> suffixes;
 
     vector<Query> OR_queries;
     vector<Query> AND_queries;
     vector<Query> NOT_queries;
 
-    static void Slice(T raw[], T result[], unsigned int start, unsigned int length);
+    vector<T> GenerateDefault();
 
-    static void Copy(T raw[], T result[]);
+    void AddPrefix(vector<T> prefix);
 
-    static void Merge(vector<T>& result, T input[]);
-
-    static void Merge(vector<T>& result, vector<T>& input);
-
-    vector<T> GenerateDefault() {
-        vector<T> result;
-
-        if (prefixes.size() > 0)
-            Merge(result, prefixes);
-
-        Merge(result, queries[0]);
-        Merge(result, peeks[0].GenerateDefault());
-
-        return result;
-    }
-
-    void AddPrefix(T prefix[]);
-
-    void AddQuery(T query[]);
-
-    void Add(T query[], Matchmaker matchmaker, bool isInverted, Range* range);
+    void Add(T queryValue, Matchmaker matchmaker, bool isInverted, Range* range);
 
     int TrySubqueries(T * raw, int currentRawCharacter, int currentQueryCharacter, int& currentQuery, int& direction, vector<Query>& queries);
 
@@ -90,36 +81,15 @@ public:
     vector<T> Reverse(T input[]);
 
     // Returns -1 is the match is a fail, returns the end position if the match is a 'success' overall
-    int Match(T raw[], int currentRawCharacter, int& currentQueryCharacter, int& currentQuery, int& direction);
+    int Match(const vector<T>& raw, int currentRawCharacter, int& currentQueryCharacter, int& currentQuery, int& direction);
 };
 
 template<class T>
-void Query<T>::Slice(T *raw, T *result, unsigned int start, unsigned int length) {
-    std::copy(std::begin(raw) + start, std::begin(raw) + start + length, std::begin(result));
-
-}
-
-template<class T>
-void Query<T>::Copy(T *raw, T *result) {
-    std::copy(std::begin(raw), std::begin(raw), std::begin(result));
-
-}
-
-template<class T>
-void Query<T>::AddPrefix(T *prefix) {
+void Query<T>::AddPrefix(vector<T> prefix) {
     auto len = sizeof prefix / sizeof prefix[0];
 
     T addition[len];
     Copy(prefix, addition);
-    prefixes.push_back(addition);
-}
-
-template<class T>
-void Query<T>::AddQuery(T *query) {
-    auto len = sizeof query / sizeof query[0];
-
-    T addition[len];
-    Copy(query, addition);
     prefixes.push_back(addition);
 }
 
@@ -148,19 +118,19 @@ bool Query<T>::TryMatch(T *raw, int currentRawCharacter, int &currentQueryCharac
         range = ranges[currentQuery];
     }
 
-    return matchmakers[currentQuery](raw, currentRawCharacter, &queries[offset], currentQueryCharacter, isInverteds[offset], range);
+    return matchmakers[currentQuery](raw, currentRawCharacter, &query[abs(offset)], currentQueryCharacter, isInverteds[offset], range);
 }
 
 template<class T>
-int Query<T>::Match(T *raw, int currentRawCharacter, int &currentQueryCharacter, int &currentQuery, int &direction) {
+int Query<T>::Match(const vector<T>& raw, int currentRawCharacter, int &currentQueryCharacter, int &currentQuery, int &direction) {
     auto prefix_result = true;
 
     if (!prefixes.empty()) {
         prefix_result = false;
         for (auto& prefix : prefixes) {
             if (currentRawCharacter > prefix.size()) {
-                T potentialPrefix[prefix.size()];
-                if (Slice(raw, potentialPrefix, currentRawCharacter - prefix.size(), prefix.size()) == prefix ) {
+                vector<T> potentialPrefix;
+                if (ArrayUtility<T>::Slice(raw, potentialPrefix, currentRawCharacter - prefix.size(), prefix.size()) == prefix ) {
                     prefix_result = true;
                     break;
                 }
@@ -182,33 +152,31 @@ int Query<T>::Match(T *raw, int currentRawCharacter, int &currentQueryCharacter,
 
 
     int offset;
-    for (offset = 0; offset < raw->size() && currentQuery < queries.size() && offset > 0; offset+=direction) {
-        for (int queryCharacterIndex = 0; queryCharacterIndex < queries[currentQuery].length(); queryCharacterIndex++) {
-            // Do continuous repeat if the repeatAmount is -1
-            if (repeatAmounts[offset] == -1) {
-                while (TryMatch(raw, currentRawCharacter + offset, queryCharacterIndex, currentQuery, direction, offset)
-                       && offset < raw->size()
-                       && offset > 0)  {
+    auto len = sizeof query / sizeof query[0];
+    for (offset = 0; offset < raw->size() && currentQuery < len && offset > 0; offset+=direction) {
+        // Do continuous repeat if the repeatAmount is -1
+        if (repeatAmounts[offset] == -1) {
+            while (TryMatch(raw, currentRawCharacter + offset, currentQueryCharacter, currentQuery, direction, offset)
+                   && offset < raw->size()
+                   && offset > 0)  {
 
-                    auto peeks_result = TrySubqueries(raw, currentRawCharacter + offset, currentQueryCharacter, currentQuery, direction, peeks);
-                    if (peeks_result != -1)
-                        return peeks_result;
-                }
+                auto peeks_result = TrySubqueries(raw, currentRawCharacter + offset, currentQueryCharacter, currentQuery, direction, suffixes);
+                if (peeks_result != -1)
+                    return peeks_result;
+            }
+
+            offset+=direction;
+        }
+        else {
+            for (int second_offset = 0; second_offset < repeatAmounts[offset] && !(offset < 0 || offset > raw->size()); second_offset++) {
+                bool isMatch = TryMatch(raw, currentRawCharacter + offset, currentQueryCharacter, currentQuery, direction, offset);
+
+                if (!isMatch)
+                    goto onFail;
 
                 offset+=direction;
             }
-            else {
-                for (int second_offset = 0; second_offset < repeatAmounts[offset] && !(offset < 0 || offset > raw->size()); second_offset++) {
-                    bool isMatch = TryMatch(raw, currentRawCharacter + offset, queryCharacterIndex, currentQuery, direction, offset);
-
-                    if (!isMatch)
-                        goto onFail;
-
-                    offset+=direction;
-                }
-            }
         }
-
     }
     // On success:
     return currentRawCharacter + offset;
@@ -218,13 +186,13 @@ int Query<T>::Match(T *raw, int currentRawCharacter, int &currentQueryCharacter,
 }
 
 template<class T>
-void Query<T>::Add(T *query, Query::Matchmaker matchmaker, bool isInverted, Query::Range *range) {
-    Add(query);
+void Query<T>::Add(T queryValue, Query::Matchmaker matchmaker, bool isInverted, Query::Range *range) {
+    query.push_back(queryValue);
     matchmakers.push_back(matchmaker);
     isInverteds.push_back(isInverted);
 
     if (range != nullptr)
-        ranges[queries.size() - 1] = *range;
+        ranges[matchmakers.size() - 1] = *range;
 }
 
 template<class T>
@@ -236,20 +204,55 @@ vector<T> Query<T>::Reverse(T *input) {
 
     Merge(result, input);
 
-    if (peeks.size() > 0)
-        Merge(result, peeks[0].GenerateDefault());
+    if (suffixes.size() > 0)
+        Merge(result, suffixes[0].GenerateDefault());
+}
+
+
+template<class T>
+vector<T> Query<T>::GenerateDefault() {
+    vector<T> result;
+
+    if (prefixes.size() > 0)
+        Merge(result, prefixes);
+
+    Merge(result, query);
+    Merge(result, suffixes[0].GenerateDefault());
+
+    return result;
+}
+template<class T>
+bool Query<T>::Range::In(T queryValue, T rawValue) {
+    if (relative) {
+        if ((queryValue - min) <= rawValue && (max + queryValue) >= rawValue) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        if (rawValue >= min && rawValue <= max) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
 }
 
 template<class T>
-void Query<T>::Merge(vector<T> &result, T *input) {
-    std::vector<T> _input(std::begin(input), std::end(input));
-    result.insert(result.end(), _input.begin(), _input.end());
+Query<T>::Range::Range(T min, T max, bool relative, T defaultValue)
+        : min(min), max(max), relative(relative), defaultValue(defaultValue) {
 }
 
 template<class T>
-void Query<T>::Merge(vector<T> &result, vector<T> &input) {
-    result.insert(result.end(), input.begin(), input.end());
+T Query<T>::Range::Reverse() {
+    return defaultValue;
 }
 
+template<class T>
+Query<T>::Range::Range() : relative(false) {
+}
 
 #endif //KASAI_QUERY_H

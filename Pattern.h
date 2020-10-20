@@ -8,7 +8,7 @@
 #include "Utility.h"
 #include "Feed.h"
 
-//#include "Substring.h"
+//#include "Subarray.h"
 
 
 class Pattern : public Feed<string> {

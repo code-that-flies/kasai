@@ -30,4 +30,5 @@ typedef bool (*FloatComparator)(Prototype*, float);
 typedef bool (*BoolComparator)(Prototype*, bool);
 typedef Prototype (*MemberFunction)(Prototype*, Prototype*);
 typedef Prototype& (*event_watcher)(const Prototype*);
+
 #endif //KASAI_UTILITY_H

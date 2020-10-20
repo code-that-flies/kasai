@@ -9,6 +9,9 @@
 using std::string;
 using std::vector;
 
+#include "Subarray.h"
+#include "Query.h"
+
 template <typename T>
 T Evaluate(T a, char char_operator, T b) {
     switch (char_operator) {
@@ -109,11 +112,25 @@ int main() {
     return 0;
 }
 */
+//     typedef bool (*Matchmaker)(const vector<T>& raw, int& rawIndex, vector<T>& query, int& queryIndex, bool inverted, Range* range);
 
+bool MatchMakkr320(const vector<char>& raw, int& rawIndex, vector<char>& query, int& queryIndex, bool inverted, Query<char>::Range* range) {
+    return true;
+}
 
 int main() {
     // TODO: add asserts to test here
+    Subarray<char> test(0, 10);
+    vector<vector<char>> result;
+    vector<char> chars = {'a', 'b', 'c'};
+    test.render(&result, chars, "test2");
 
+    Query<char> charSet;
+    charSet.Add('c', MatchMakkr320, true, nullptr);
+
+    for (auto item : result[0]) {
+        std::cout << item;
+    }
     Prototype_Engine::End();
     return 0;
 }
