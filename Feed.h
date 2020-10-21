@@ -9,38 +9,38 @@
 
 using std::vector;
 
-template <class T>
-class Feed : public vector<T> {
+template <class TLine>
+class Feed : public vector<TLine> {
 public:
-    typedef void (*Processor)(T);
+    typedef void (*Processor)(TLine);
     vector<Processor> feed_scanning_processors;
 
     Feed();
 
     void Add(Processor processor);
 
-    void Add(T line);
+    void Add(TLine line);
 
-    void OnNewInfo(T line) {
+    void OnNewInfo(TLine line) {
         Add(line);
     }
 };
 
-template<class T>
-void Feed<T>::Add(Feed::Processor processor) {
+template<class TLine>
+void Feed<TLine>::Add(Feed::Processor processor) {
     feed_scanning_processors.push_back(processor);
 }
 
-template<class T>
-void Feed<T>::Add(T firstline) {
+template<class TLine>
+void Feed<TLine>::Add(TLine firstline) {
     this->push_back(firstline);
     for (int i = 0; i < this->size(); i++) {
         feed_scanning_processors[i]((*this)[this->size() - 1]);
     }
 }
 
-template<class T>
-Feed<T>::Feed() {
+template<class TLine>
+Feed<TLine>::Feed() {
 
 }
 

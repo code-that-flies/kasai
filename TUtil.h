@@ -8,6 +8,14 @@
 #include "Utility.h"
 #include "IReversible.h"
 #include <iterator>
+#include <unordered_set>
+
+#include <string>
+#include <vector>
+
+using std::vector;
+using std::string;
+using std::unordered_set;
 
 template <class T>
 class TUtil {
@@ -17,6 +25,13 @@ public:
     static void Copy(const vector<T> raw, vector<T>& result);
 
     static void Merge(vector<T>& result, vector<T>& input);
+
+    // Source: https://leetcode.com/problems/intersection-of-two-arrays/discuss/82001/8ms-concise-C%2B%2B-using-unordered_set
+    static vector<T> Intersection(const vector<T>& left, const vector<T>& right);
+
+    static bool Has(const vector<T>& raw, const T& query);
+
+    static bool Intersects(const vector<T>& left, const vector<T>& right);
 
     static string ToString(const vector<T>& value);
 
@@ -68,6 +83,34 @@ vector<char> TUtil<T>::FromString(const string &input) {
 template<class T>
 string TUtil<T>::ToString(const vector<T> &value) {
     return string(value.begin(), value.end());
+}
+
+template<class T>
+vector<T> TUtil<T>::Intersection(const vector<T> &left, const vector<T> &right) {
+    unordered_set<T> m(left.begin(), left.end());
+    vector<T> result;
+
+    for (auto a : right) {
+        if (m.count(a)) {
+            result.push_back(a);
+            m.erase(a);
+        }
+    }
+
+    return result;
+}
+
+template<class T>
+bool TUtil<T>::Intersects(const vector<T>& left, const vector<T>& right) {
+    if (Intersection(left, right).size() > 0)
+        return true;
+    else
+        return false;
+}
+
+template<class T>
+bool TUtil<T>::Has(const vector<T>& raw, const T& query) {
+    return std::find(raw.begin(), raw.end(), query) != raw.end();
 }
 
 template<class T>

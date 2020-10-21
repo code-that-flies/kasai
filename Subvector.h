@@ -31,8 +31,8 @@ public:
 
     void new_layer();
 
-    bool _push_back(int start, int end, string tag = "");
-    bool push_back(int start, int end, string tag = "");
+    bool _push_back(int start, int end, vector<string> tags);
+    bool push_back(int start, int end, vector<string> tags);
 
     void render(vector<vector<T>> * result, const vector<T>& raw, string tag = "");
 
@@ -67,13 +67,13 @@ Subvector<T>::~Subvector() {
 template<class T>
 void Subvector<T>::new_layer() {
     layer++;
-    for (Subvector* subarray : subvectors) {
-        subarray->new_layer();
+    for (Subvector* subvector : subvectors) {
+        subvector->new_layer();
     }
 }
 
 template<class T>
-bool Subvector<T>::_push_back(int start, int end, string tag) {
+bool Subvector<T>::_push_back(int start, int end, vector<string> tags) {
     if (end > this->max) {
         if (isClip)
             end = this->max;
@@ -83,20 +83,18 @@ bool Subvector<T>::_push_back(int start, int end, string tag) {
     }
     auto result = new Subvector(start, end);
     subvectors.push_back(result);
-    SetTag(tag);
+    result->tags = tags;
     return true;
 }
 
 template<class T>
-bool Subvector<T>::push_back(int start, int end, string tag) {
-    auto result = new Subvector(start, end);
-
+bool Subvector<T>::push_back(int start, int end, vector<string> tags) {
     if (layer == 1) {
-        _push_back(start, end, tag);
+        _push_back(start, end, tags);
     }
     else if (layer > 1) {
         for (auto val : subvectors) {
-            if (!val->tags.empty()) {
+            if (!val->tags.empty() && !TUtil<string>::Intersects(tags, val->tags)) {
                 if (val->In(start) || val->In(end)) {
                     return false;
                 }
@@ -109,7 +107,7 @@ bool Subvector<T>::push_back(int start, int end, string tag) {
                     else
                         return false;
                 }
-                return val->push_back(start, end);
+                return val->push_back(start, end, tags);
             }
         }
     }
@@ -140,8 +138,7 @@ void Subvector<T>::render(vector<vector<T>> *result, const vector<T>& raw, strin
             subarray->render(result, raw);
         }
 
-        if (subvectors.empty() && layer < 2 && GetTag() == tag) {
-
+        if (subvectors.empty() && layer < 2 && TUtil<string>::Has(this->tags, tag)) {
             vector<T> subresult;
             TUtil<T>::Slice(raw, subresult, this->min, this->max - this->min);
             result->push_back(subresult);
@@ -181,7 +178,7 @@ void Subvector<T>::AddTag(string tag) {
 
 template<class T>
 void Subvector<T>::SetTag(string tag) {
-    if (tags.empty() && tag != "")
+    if (tags.empty() && !tag.empty())
         tags.push_back(tag);
 }
 
@@ -200,10 +197,10 @@ void Subvector<T>::render_with_tags(vector<pair<string, T>> *result, const vecto
         subarray->render_with_tags(result, raw);
     }
 
-    auto tag = GetTag();
+    auto tag = GetTag(0); // TODO: use a tag class so that the tags are not lost
     if (tag != "") {
         if (subvectors.empty() && layer < 2) {
-            vector<char> array;
+            vector<T> array;
             result->push_back(pair(tag, TUtil<T>::Slice(raw, array, this->min, this->max - this->min)));
         }
     }
