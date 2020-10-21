@@ -7,7 +7,7 @@
 
 #include "Query.h"
 #include "Utility.h"
-#include "TUtil.h"
+#include "Util.h"
 #include "MatchmakerUtility.h"
 #include "IReversible.h"
 
@@ -19,7 +19,7 @@ public:
 
     // Each query has a given matchmaker.
     // This is the definition of a matchmaker!
-    typedef bool (*Matchmaker)(const vector<T>& raw, int& rawIndex, vector<T>& query, int& queryIndex, bool inverted, typename TUtil<T>::Range* range);
+    typedef bool (*Matchmaker)(const vector<T>& raw, int& rawIndex, vector<T>& query, int& queryIndex, bool inverted, typename Util<T>::Range* range);
 
     // Query is an array of characters.
     // Being a match is a local 'success'
@@ -30,7 +30,7 @@ public:
     // the opposite of what it is normally calculating if 'isInvetreds[currentQuery] == true'
     vector<bool> isInverteds;
     vector<int> repeatAmounts;
-    map<int, typename TUtil<T>::Range> ranges;
+    map<int, typename Util<T>::Range> ranges;
 
     // Tags are used to:
     // generate Abstract Data Trees such as Abstract Syntax Trees
@@ -51,11 +51,11 @@ public:
 
     void AddPrefix(vector<T> prefix);
 
-    void Add(T queryValue, Matchmaker matchmaker, bool isInverted, typename TUtil<T>::Range* range);
+    void Add(T queryValue, Matchmaker matchmaker, bool isInverted, typename Util<T>::Range* range, int repeatAmount=1);
 
-    int TrySubqueries(T * raw, int currentRawCharacter, int currentQueryCharacter, int& currentQuery, int& direction, vector<Query>& queries);
+    int TrySubqueries(const vector<T>& raw, int currentRawCharacter, int currentQueryCharacter, int& currentQuery, int& direction, vector<Query>& queries);
 
-    bool TryMatch(T raw[], int currentRawCharacter, int& currentQueryCharacter, int& currentQuery, int direction, int offset);
+    bool TryMatch(const vector<T>& raw, int currentRawCharacter, int& currentQueryCharacter, int& currentQuery, int direction, int offset);
 
     // Returns the reverse of match
     // (aka a re-'built' array)
@@ -76,7 +76,7 @@ void Query<T>::AddPrefix(vector<T> prefix) {
 
 template<class T>
 int
-Query<T>::TrySubqueries(T *raw, int currentRawCharacter, int currentQueryCharacter, int &currentQuery, int &direction,
+Query<T>::TrySubqueries(const vector<T>& raw, int currentRawCharacter, int currentQueryCharacter, int &currentQuery, int &direction,
                         vector<Query> &queries) {
     int result;
 
@@ -91,15 +91,15 @@ Query<T>::TrySubqueries(T *raw, int currentRawCharacter, int currentQueryCharact
 }
 
 template<class T>
-bool Query<T>::TryMatch(T *raw, int currentRawCharacter, int &currentQueryCharacter, int &currentQuery, int direction,
+bool Query<T>::TryMatch(const vector<T>& raw, int currentRawCharacter, int &currentQueryCharacter, int &currentQuery, int direction,
                         int offset) {
-    auto range = nullptr;
+    typename Util<T>::Range* range = nullptr;
 
     if (ranges.find(currentQuery) != ranges.end()) {
-        range = ranges[currentQuery];
+        range = &ranges[currentQuery];
     }
 
-    return matchmakers[currentQuery](raw, currentRawCharacter, &query[abs(offset)], currentQueryCharacter, isInverteds[offset], range);
+    return matchmakers[currentQuery](raw, currentRawCharacter, query, currentQueryCharacter, isInverteds[currentQuery], range);
 }
 
 template<class T>
@@ -111,7 +111,8 @@ int Query<T>::Match(const vector<T>& raw, int currentRawCharacter, int &currentQ
         for (auto& prefix : prefixes) {
             if (currentRawCharacter > prefix.size()) {
                 vector<T> potentialPrefix;
-                if (TUtil<T>::Slice(raw, potentialPrefix, currentRawCharacter - prefix.size(), prefix.size()) == prefix ) {
+                Util<T>::Slice(raw, potentialPrefix, currentRawCharacter - prefix.size(), prefix.size());
+                if ( Util<T>::Same(potentialPrefix, prefix) ) {
                     prefix_result = true;
                     break;
                 }
@@ -123,39 +124,41 @@ int Query<T>::Match(const vector<T>& raw, int currentRawCharacter, int &currentQ
         return -1;
 
     // If an antiQuery succceeds, the query fails
-    auto antiqueriesResult = TrySubqueries(raw, currentRawCharacter, currentQueryCharacter, currentQuery, direction, NOT_queries);
-    if (antiqueriesResult != -1)
+    auto NOT_queriesResult = TrySubqueries(raw, currentRawCharacter, currentQueryCharacter, currentQuery, direction, NOT_queries);
+    if (NOT_queriesResult != -1)
         return -1;
 
     auto AND_result = TrySubqueries(raw, currentRawCharacter, currentQueryCharacter, currentQuery, direction, AND_queries);
-    if (AND_result == -1)
+    if (AND_result == -1 && !AND_queries.empty())
         return -1;
 
 
     int offset;
     auto len = sizeof query / sizeof query[0];
-    for (offset = 0; offset < raw->size() && currentQuery < len && offset > 0; offset+=direction) {
+    for (offset = 0; offset < raw.size() && currentQuery < len && offset >= 0; offset+=direction) {
         // Do continuous repeat if the repeatAmount is -1
         if (repeatAmounts[offset] == -1) {
             while (TryMatch(raw, currentRawCharacter + offset, currentQueryCharacter, currentQuery, direction, offset)
-                   && offset < raw->size()
-                   && offset > 0)  {
+                   && offset < raw.size()
+                   && offset > 0) {
 
-                auto peeks_result = TrySubqueries(raw, currentRawCharacter + offset, currentQueryCharacter, currentQuery, direction, suffixes);
+                auto peeks_result = TrySubqueries(raw, currentRawCharacter + offset, currentQueryCharacter,
+                                                  currentQuery, direction, suffixes);
                 if (peeks_result != -1)
                     return peeks_result;
             }
 
-            offset+=direction;
-        }
-        else {
-            for (int second_offset = 0; second_offset < repeatAmounts[offset] && !(offset < 0 || offset > raw->size()); second_offset++) {
-                bool isMatch = TryMatch(raw, currentRawCharacter + offset, currentQueryCharacter, currentQuery, direction, offset);
+            offset += direction;
+        } else {
+            for (int second_offset = 0;
+                 second_offset < repeatAmounts[offset] && !(offset < 0 || offset > raw.size()); second_offset++) {
+                bool isMatch = TryMatch(raw, currentRawCharacter + offset, currentQueryCharacter, currentQuery,
+                                        direction, offset);
 
                 if (!isMatch)
                     goto onFail;
 
-                offset+=direction;
+                offset += direction;
             }
         }
     }
@@ -167,10 +170,11 @@ int Query<T>::Match(const vector<T>& raw, int currentRawCharacter, int &currentQ
 }
 
 template<class T>
-void Query<T>::Add(T queryValue, Query::Matchmaker matchmaker, bool isInverted, typename TUtil<T>::Range *range) {
+void Query<T>::Add(T queryValue, Query::Matchmaker matchmaker, bool isInverted, typename Util<T>::Range *range, int repeatAmount) {
     query.push_back(queryValue);
     matchmakers.push_back(matchmaker);
     isInverteds.push_back(isInverted);
+    repeatAmounts.push_back(repeatAmount);
 
     if (range != nullptr)
         ranges[matchmakers.size() - 1] = *range;

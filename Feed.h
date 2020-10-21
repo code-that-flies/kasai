@@ -5,14 +5,12 @@
 #ifndef KASAI_FEED_H
 #define KASAI_FEED_H
 
-#include <vector>
-
-using std::vector;
+#include "Utility.h"
 
 template <class TLine>
 class Feed : public vector<TLine> {
 public:
-    typedef void (*Processor)(TLine);
+    typedef void (*Processor)(Feed<TLine>*, TLine);
     vector<Processor> feed_scanning_processors;
 
     Feed();
@@ -35,7 +33,7 @@ template<class TLine>
 void Feed<TLine>::Add(TLine firstline) {
     this->push_back(firstline);
     for (int i = 0; i < this->size(); i++) {
-        feed_scanning_processors[i]((*this)[this->size() - 1]);
+        feed_scanning_processors[i](this, (*this)[this->size() - 1]);
     }
 }
 

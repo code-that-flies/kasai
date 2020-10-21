@@ -10,7 +10,7 @@
 #include <vector>
 #include <map>
 #include <utility>
-#include "TUtil.h"
+#include "Util.h"
 
 using std::string;
 using std::vector;
@@ -18,7 +18,7 @@ using std::map;
 using std::pair;
 
 template <class T>
-class Subvector : public TUtil<int>::Range, public IReversible {
+class Subvector : public Util<int>::Range, public IReversible {
 public:
     int layer;
     vector<Subvector<T>*> subvectors;
@@ -94,7 +94,7 @@ bool Subvector<T>::push_back(int start, int end, vector<string> tags) {
     }
     else if (layer > 1) {
         for (auto val : subvectors) {
-            if (!val->tags.empty() && !TUtil<string>::Intersects(tags, val->tags)) {
+            if (!val->tags.empty() && !Util<string>::Intersects(tags, val->tags)) {
                 if (val->In(start) || val->In(end)) {
                     return false;
                 }
@@ -128,7 +128,7 @@ void Subvector<T>::render(vector<vector<T>> *result, const vector<T>& raw, strin
 
         if (subvectors.empty() && layer < 2 && GetTag() == tag) {
             vector<T> subresult;
-            TUtil<T>::Slice(raw, subresult, this->min, this->max - this->min);
+            Util<T>::Slice(raw, subresult, this->min, this->max - this->min);
             result->push_back(subresult);
 
         }
@@ -138,9 +138,9 @@ void Subvector<T>::render(vector<vector<T>> *result, const vector<T>& raw, strin
             subarray->render(result, raw);
         }
 
-        if (subvectors.empty() && layer < 2 && TUtil<string>::Has(this->tags, tag)) {
+        if (subvectors.empty() && layer < 2 && Util<string>::Has(this->tags, tag)) {
             vector<T> subresult;
-            TUtil<T>::Slice(raw, subresult, this->min, this->max - this->min);
+            Util<T>::Slice(raw, subresult, this->min, this->max - this->min);
             result->push_back(subresult);
         }
     }
@@ -153,7 +153,7 @@ vector<T> Subvector<T>::Reverse(vector<T> toReplaceWith, const vector<T>& raw, i
         vector<T> result;
         for (int index = 0; index < subvectors.size(); index++) {
             auto current = subvectors[index];
-            TUtil<T>::Merge(result, current->Reverse(toReplaceWith, raw, prevSubvectorEnd));
+            Util<T>::Merge(result, current->Reverse(toReplaceWith, raw, prevSubvectorEnd));
         }
 
         return result;
@@ -161,9 +161,9 @@ vector<T> Subvector<T>::Reverse(vector<T> toReplaceWith, const vector<T>& raw, i
     else if (subvectors.empty()) {
         prevSubvectorEnd = this->max;
         if (_prevSubvectorEnd > 0)
-            return TUtil<T>::Merge(TUtil<T>::Slice(raw, _prevSubvectorEnd, this->min - _prevSubvectorEnd), toReplaceWith);
+            return Util<T>::Merge(Util<T>::Slice(raw, _prevSubvectorEnd, this->min - _prevSubvectorEnd), toReplaceWith);
         else
-            return TUtil<T>::Merge(TUtil<T>::Slice(raw, 0, this->min), toReplaceWith);
+            return Util<T>::Merge(Util<T>::Slice(raw, 0, this->min), toReplaceWith);
     }
     else {
         return vector<T>();
@@ -201,7 +201,7 @@ void Subvector<T>::render_with_tags(vector<pair<string, T>> *result, const vecto
     if (tag != "") {
         if (subvectors.empty() && layer < 2) {
             vector<T> array;
-            result->push_back(pair(tag, TUtil<T>::Slice(raw, array, this->min, this->max - this->min)));
+            result->push_back(pair(tag, Util<T>::Slice(raw, array, this->min, this->max - this->min)));
         }
     }
 }

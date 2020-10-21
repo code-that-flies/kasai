@@ -10,7 +10,10 @@
 #include "Query.h"
 #include "Subvector.h"
 
-//#include "Subvector.h"
+
+
+template <class T>
+void Process(Feed<vector<T>>* _self, vector<T> line);
 
 template <typename T>
 class Pattern : public Feed<vector<T>> {
@@ -27,41 +30,50 @@ public:
     TDocumentSubvectors subvectors;
     vector<TQuery> queries;
 
-    Pattern() {
-        this->Add(&Process);
-    }
+    Pattern();
 
     void AddQuery(TQuery& query) {
         queries.push_back(query);
     }
 
-    void Process(TLine line) {
-        TLineSubvectors subvectors;
-
-        for (TQuery query: queries) {
-            int endPosition;
-
-            for (int startPosition = 0; startPosition < line.size(); startPosition++) {
-                auto currentQueryCharacter = 0;
-                endPosition = query.Match(line, startPosition, currentQueryCharacter, 0, 1);
-
-                if (endPosition != -1) {
-                    TSubvector subvector = TSubvector(startPosition, endPosition);
-                    for (string tag: query.tags) {
-                        subvector.AddTag(tag);
-                    }
-
-                    subvectors.push_back(subvector);
-
-                    startPosition = endPosition;
-                }
-            }
-        }
-
-        this->subvectors.push_back(subvectors);
-    }
-
 };
 
+template<typename T>
+Pattern<T>::Pattern() {
+    this->Add(Process);
+}
+
+
+template<class T>
+void Process(Feed<vector<T>> *_self, vector<T> line) {
+    auto self = (Pattern<T>*)_self;
+
+
+    vector<Subvector<T>> subvectors;
+
+    for (Query<T> query: self->queries) {
+        auto endPosition = 0;
+
+        for (int startPosition = 0; startPosition < line.size(); startPosition++) {
+            auto currentQueryCharacter = 0;
+            auto currentQuery = 0;
+            auto direction = 1;
+            endPosition = query.Match(line, startPosition, currentQueryCharacter, currentQuery, direction);
+
+            if (endPosition != -1) {
+                Subvector<T> subvector = Subvector<T>(startPosition, endPosition);
+                for (string tag: query.tags) {
+                    subvector.AddTag(tag);
+                }
+
+                subvectors.push_back(subvector);
+
+                startPosition = endPosition;
+            }
+        }
+    }
+
+    self->subvectors.push_back(subvectors);
+}
 
 #endif //KASAI_PATTERN_H

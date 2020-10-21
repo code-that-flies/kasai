@@ -114,7 +114,7 @@ int main() {
 */
 //     typedef bool (*Matchmaker)(const vector<T>& raw, int& rawIndex, vector<T>& query, int& queryIndex, bool inverted, Range* range);
 
-bool MatchMakkr320(const vector<char>& raw, int& rawIndex, vector<char>& query, int& queryIndex, bool inverted, TUtil<char>::Range* range) {
+bool MatchMakkr320(const vector<char>& raw, int& rawIndex, vector<char>& query, int& queryIndex, bool inverted, Util<char>::Range* range) {
     return true;
 }
 
@@ -128,9 +128,14 @@ int main() {
     Query<char> charSet;
     charSet.Add('c', MatchMakkr320, true, nullptr);
 
-    for (auto item : result[0]) {
-        std::cout << item;
-    }
+//    for (auto item : result[0]) {
+//        std::cout << item;
+//    }
+
+    Pattern<char> pattern;
+    pattern.queries.push_back(charSet);
+    Process(&pattern, chars);
+
     PrototypeEngine::End();
     return 0;
 }

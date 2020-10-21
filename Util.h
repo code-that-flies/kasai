@@ -2,8 +2,8 @@
 // Created by Nathaniel Blair on 20/10/20.
 //
 
-#ifndef KASAI_TUTIL_H
-#define KASAI_TUTIL_H
+#ifndef KASAI_UTIL_H
+#define KASAI_UTIL_H
 
 #include "Utility.h"
 #include "IReversible.h"
@@ -18,7 +18,7 @@ using std::string;
 using std::unordered_set;
 
 template <class T>
-class TUtil {
+class Util {
 public:
     static void Slice(const vector<T> raw, vector<T>& result, unsigned int start, unsigned int length);
 
@@ -30,6 +30,8 @@ public:
     static vector<T> Intersection(const vector<T>& left, const vector<T>& right);
 
     static bool Has(const vector<T>& raw, const T& query);
+
+    static bool Same(const vector<T>& left, const vector<T>& right);
 
     static bool Intersects(const vector<T>& left, const vector<T>& right);
 
@@ -60,33 +62,33 @@ public:
 
 
 template<class T>
-void TUtil<T>::Slice(const vector<T> raw, vector<T>& result, unsigned int start, unsigned int length) {
+void Util<T>::Slice(const vector<T> raw, vector<T>& result, unsigned int start, unsigned int length) {
     std::copy(std::begin(raw) + start, std::begin(raw) + start + length, std::begin(result));
 }
 
 template<class T>
-void TUtil<T>::Copy(const vector<T> raw, vector<T>& result) {
+void Util<T>::Copy(const vector<T> raw, vector<T>& result) {
     std::copy(std::begin(raw), std::begin(raw), std::begin(result));
 
 }
 
 template<class T>
-void TUtil<T>::Merge(vector<T> &result, vector<T> &input) {
+void Util<T>::Merge(vector<T> &result, vector<T> &input) {
     result.insert(result.end(), input.begin(), input.end());
 }
 
 template<class T>
-vector<char> TUtil<T>::FromString(const string &input) {
+vector<char> Util<T>::FromString(const string &input) {
     return vector<char>(input.begin(), input.end());
 }
 
 template<class T>
-string TUtil<T>::ToString(const vector<T> &value) {
+string Util<T>::ToString(const vector<T> &value) {
     return string(value.begin(), value.end());
 }
 
 template<class T>
-vector<T> TUtil<T>::Intersection(const vector<T> &left, const vector<T> &right) {
+vector<T> Util<T>::Intersection(const vector<T> &left, const vector<T> &right) {
     unordered_set<T> m(left.begin(), left.end());
     vector<T> result;
 
@@ -101,7 +103,7 @@ vector<T> TUtil<T>::Intersection(const vector<T> &left, const vector<T> &right) 
 }
 
 template<class T>
-bool TUtil<T>::Intersects(const vector<T>& left, const vector<T>& right) {
+bool Util<T>::Intersects(const vector<T>& left, const vector<T>& right) {
     if (Intersection(left, right).size() > 0)
         return true;
     else
@@ -109,12 +111,18 @@ bool TUtil<T>::Intersects(const vector<T>& left, const vector<T>& right) {
 }
 
 template<class T>
-bool TUtil<T>::Has(const vector<T>& raw, const T& query) {
+bool Util<T>::Has(const vector<T>& raw, const T& query) {
     return std::find(raw.begin(), raw.end(), query) != raw.end();
 }
 
 template<class T>
-bool TUtil<T>::Range::In(T queryValue, T rawValue) {
+bool Util<T>::Same(const vector<T>& left, const vector<T>& right) {
+    auto correctLength = std::max(left.size(), right.size());
+    return Intersection(left, right).size() == correctLength;
+}
+
+template<class T>
+bool Util<T>::Range::In(T queryValue, T rawValue) {
     if (relative) {
         if ((queryValue - min) <= rawValue && (max + queryValue) >= rawValue) {
             return true;
@@ -134,23 +142,23 @@ bool TUtil<T>::Range::In(T queryValue, T rawValue) {
 }
 
 template<class T>
-TUtil<T>::Range::Range(T min, T max, bool relative, T defaultValue)
+Util<T>::Range::Range(T min, T max, bool relative, T defaultValue)
         : min(min), max(max), relative(relative), defaultValue(defaultValue) {
 }
 
 template<class T>
-T TUtil<T>::Range::Reverse() {
+T Util<T>::Range::Reverse() {
     return defaultValue;
 }
 
 template<class T>
-TUtil<T>::Range::Range() : relative(false) {
+Util<T>::Range::Range() : relative(false) {
 }
 
 template<class T>
-bool TUtil<T>::Range::In(T value) {
+bool Util<T>::Range::In(T value) {
     return index >= this->min && index <= this->max;
 }
 
 
-#endif //KASAI_TUTIL_H
+#endif //KASAI_UTIL_H
