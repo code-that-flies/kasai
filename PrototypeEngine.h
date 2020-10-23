@@ -28,7 +28,7 @@ public:
 
     static void End() {
         delete prototypeEngine;
-        delete EventEngine::event_engine;
+        delete EventEngine::events;
 
         for( auto const& [key, val] : File::files ) {
             delete val;

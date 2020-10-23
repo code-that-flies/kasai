@@ -5,11 +5,9 @@
 #include "EventEngine.h"
 #include "File.h"
 
-EventEngine* EventEngine::event_engine = new EventEngine();
-File* EventEngine::eventLog = new File();
+vector<EventEngine::Event>* EventEngine::events = new vector<EventEngine::Event>();
 
-
-map<string, vector<event_watcher>> EventEngine::event_watchers = map<string, vector<event_watcher>>();
+std::mutex EventEngine::triggerMutex = std::mutex();
 
 void EventEngine::Begin(string event_name) {
     eventLog->WriteLine("Begin:\t\t" + event_name);

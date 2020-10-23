@@ -27,49 +27,49 @@ public:
         Event(string name, Prototype* info);
     };
 
-    static File* eventLog;
-    static vector<Event> events;
+    File* eventLog;
+    static vector<Event>* events;
     static std::mutex triggerMutex;
 
-    map<string, vector<event_watcher>> event_watchers;
+    map<string, vector<event_watcher>> eventWatchers;
 
     int latestProcessedEvent;
 
     EventEngine();
 
     void Add(string event_name, event_watcher eventWatcher) {
-        if (event_watchers.find(event_name) == event_watchers.end()) {
-            event_watchers[event_name] = vector<event_watcher>();
+        if (eventWatchers.find(event_name) == eventWatchers.end()) {
+            eventWatchers[event_name] = vector<event_watcher>();
         }
 
-        event_watchers[event_name].push_back(eventWatcher);
+        eventWatchers[event_name].push_back(eventWatcher);
     }
 
-    void TryTrigger() {
-        if (latestProcessedEvent < events.size() - 1) {
+    bool TryTrigger() {
+        if (latestProcessedEvent < events->size() - 1) {
             latestProcessedEvent++;
-            auto& event = events[latestProcessedEvent];
+            auto& event = (*events)[latestProcessedEvent];
 
-            Trigger(event.name, event.info);
+            TryTrigger(event.name, event.info);
+
         }
     }
 
     static void Trigger(string name, Prototype* value) {
         std::lock_guard<std::mutex> guard(triggerMutex);
-
-        events.push_back(Event(name, value));
+        events->emplace_back(name, value);
     }
 
-    void Trigger(const string event_name, const Prototype* info) {
-        if (event_watchers.find(event_name) == event_watchers.end()) {
+    void TryTrigger(const string event_name, const Prototype* info) {
+        if (eventWatchers.find(event_name) == eventWatchers.end()) {
             return;
         }
 
-        event_engine->Begin(event_name);
-        for (auto event_watcher : event_watchers[event_name]) {
+        this->Begin(event_name);
+        for (auto event_watcher : eventWatchers[event_name]) {
             event_watcher(info);
         }
-        event_engine->End(event_name);
+        this->End(event_name);
     }
 
 
