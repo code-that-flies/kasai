@@ -29,6 +29,9 @@ public:
     // Source: https://leetcode.com/problems/intersection-of-two-arrays/discuss/82001/8ms-concise-C%2B%2B-using-unordered_set
     static vector<T> Intersection(const vector<T>& left, const vector<T>& right);
 
+    // Source: https://leetcode.com/problems/intersection-of-two-arrays/discuss/82001/8ms-concise-C%2B%2B-using-unordered_set
+    static vector<T> Difference(const vector<T>& left, const vector<T>& right);
+
     static bool Has(const vector<T>& raw, const T& query);
 
     static bool Same(const vector<T>& left, const vector<T>& right);
@@ -94,6 +97,21 @@ vector<T> Util<T>::Intersection(const vector<T> &left, const vector<T> &right) {
 
     for (auto a : right) {
         if (m.count(a)) {
+            result.push_back(a);
+            m.erase(a);
+        }
+    }
+
+    return result;
+}
+
+template<class T>
+vector<T> Util<T>::Difference(const vector<T> &left, const vector<T> &right) {
+    unordered_set<T> m(left.begin(), left.end());
+    vector<T> result;
+
+    for (auto a : right) {
+        if (!m.count(a)) {
             result.push_back(a);
             m.erase(a);
         }

@@ -141,7 +141,7 @@ void Table::Data_Structure::AttemptToTriggerEvent(string name, string val) {
         auto hasQuery = cursor->has(query);
 
         if (hasQuery) {
-            Event::Trigger(eventName, cursor);
+            EventEngine::Trigger(eventName, cursor);
         }
     }
 }
@@ -166,7 +166,7 @@ void Table::Data_Structure::AttemptToTriggerEvent(string name, int val) {
         auto hasQuery = cursor->has(query);
 
         if (hasQuery) {
-            Event::Trigger(eventName, cursor);
+            EventEngine::Trigger(eventName, cursor);
         }
     }
 }
@@ -191,7 +191,7 @@ void Table::Data_Structure::AttemptToTriggerEvent(string name, float val) {
         auto hasQuery = cursor->has(query);
 
         if (hasQuery) {
-            Event::Trigger(eventName, cursor);
+            EventEngine::Trigger(eventName, cursor);
         }
     }
 }
@@ -216,7 +216,7 @@ void Table::Data_Structure::AttemptToTriggerEvent(string name, bool val) {
         auto hasQuery = cursor->has(query);
 
         if (hasQuery) {
-            Event::Trigger(eventName, cursor);
+            EventEngine::Trigger(eventName, cursor);
         }
     }
 }

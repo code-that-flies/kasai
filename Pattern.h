@@ -36,6 +36,8 @@ public:
         queries.push_back(query);
     }
 
+    // TODO: add render function
+
 };
 
 template<typename T>

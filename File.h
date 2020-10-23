@@ -9,7 +9,7 @@
 #include <string>
 #include <map>
 #include <fstream>
-#include "Event.h"
+#include "EventEngine.h"
 #include "TypedPrototype.h"
 
 using std::string;
@@ -41,8 +41,8 @@ public:
             }
         }
         else {
-            Event::Trigger("new file created",
-                           new TypedPrototype<string>(
+            EventEngine::Trigger("new file created",
+                                 new TypedPrototype<string>(
                                    filename, ETYPE::STRING));
 
             result = new File();
@@ -56,8 +56,8 @@ public:
     }
 
     void Submit(string contents) {
-        Event::Trigger("file overwrite submitted",
-                       new TypedPrototype<string>(
+        EventEngine::Trigger("file overwrite submitted",
+                             new TypedPrototype<string>(
                                filename, ETYPE::STRING));
         std::ofstream outfile(filename, std::ofstream::trunc);
 
@@ -67,8 +67,8 @@ public:
     }
 
     void WriteLine(string line) {
-        Event::Trigger("file linewrite submitted",
-                       new TypedPrototype<string>(
+        EventEngine::Trigger("file linewrite submitted",
+                             new TypedPrototype<string>(
                                filename, ETYPE::STRING));
         std::ofstream outfile(filename);
 

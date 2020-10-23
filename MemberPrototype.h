@@ -8,7 +8,7 @@
 #include <map>
 #include "Prototype.h"
 #include "PrototypeEngine.h"
-#include "Event.h"
+#include "EventEngine.h"
 
 class MemberPrototype : public Prototype {
 public:
@@ -17,9 +17,9 @@ public:
     MemberPrototype(MemberFunction value);
 
     Prototype Run(Prototype* self, Prototype* input) {
-        Event::Trigger(PrototypeEngine::prototypeEngine->name_by_id[self->identity]
-                       + "::"
-                       + PrototypeEngine::prototypeEngine->name_by_id[this->identity]
+        EventEngine::Trigger(PrototypeEngine::prototypeEngine->name_by_id[self->identity]
+                             + "::"
+                             + PrototypeEngine::prototypeEngine->name_by_id[this->identity]
         , self
         );
 

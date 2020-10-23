@@ -6,7 +6,7 @@
 #define KASAI_PROTOTYPEENGINE_H
 
 #include "Utility.h"
-#include "Event.h"
+#include "EventEngine.h"
 #include "File.h"
 
 class PrototypeEngine {
@@ -28,7 +28,7 @@ public:
 
     static void End() {
         delete prototypeEngine;
-        delete Event::event_engine;
+        delete EventEngine::event_engine;
 
         for( auto const& [key, val] : File::files ) {
             delete val;
