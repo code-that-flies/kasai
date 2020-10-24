@@ -29,20 +29,177 @@ public:
 
     TDocumentSubvectors subvectors;
     vector<TQuery> queries;
+    unsigned int layer;
 
     Pattern();
 
-    void AddQuery(TQuery& query) {
-        queries.push_back(query);
-    }
+    void NewLayer();
 
-    // TODO: add render function
+    vector<pair<vector<string>, vector<T>>> RenderWithTags(vector<string> tags, const TLine & line, unsigned int lineIndex);
+    vector<pair<vector<string>, vector<T>>> RenderWithTags(const TLine& line, unsigned int lineIndex);
+
+    vector<vector<T>> RenderWithTags(const TDocument& document);
+
+    vector<vector<T>> RenderWithTags(vector<string> tags, const TDocument& document);
+
+    vector<T> Render(const TLine& line, unsigned int lineIndex);
+
+    vector<vector<T>> Render(const TDocument& document);
+
+    // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
+    vector<vector<T>> Reverse(const TDocument & document, vector<string> tags, vector<T> toReplaceWith);
+
+    // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
+    vector<vector<T>> Reverse(const TDocument & document, vector<T> toReplaceWith);
+
+    void AddQuery(TQuery& query);
 
 };
 
 template<typename T>
-Pattern<T>::Pattern() {
+Pattern<T>::Pattern() : layer(0) {
     this->Add(Process);
+}
+
+template<typename T>
+void Pattern<T>::NewLayer() {
+    for (TLineSubvectors _subvectors : subvectors) {
+        for (TSubvector subvector : _subvectors) {
+            subvector.NewLayer();
+        }
+    }
+
+    this->layer++;
+}
+
+template<typename T>
+vector<pair<vector<string>, vector<T>>>
+Pattern<T>::RenderWithTags(vector<string> tags, const Pattern::TLine &line, unsigned int lineIndex) {
+    auto result = vector<pair<vector<string>, vector<T>>>();
+
+    for (TSubvector subvector: subvectors[lineIndex]) {
+        subvector.RenderWithTags(&result, line, tags);
+    }
+
+    return result;
+}
+
+template<typename T>
+vector<pair<vector<string>, vector<T>>> Pattern<T>::RenderWithTags(const Pattern::TLine &line, unsigned int lineIndex) {
+    auto result = vector<pair<vector<string>, TLine>>();
+
+    for (TSubvector subvector: subvectors[lineIndex]) {
+        subvector.RenderWithTags(&result, line);
+    }
+
+    return result;
+}
+
+template<typename T>
+vector<vector<T>> Pattern<T>::RenderWithTags(const Pattern::TDocument &document) {
+    auto result = vector<vector<pair<vector<string>, TLine>>>();
+
+    for (int index = 0; index < document.size(); index++) {
+        result.push_back(
+                std::move(
+                        RenderWithTags(
+                                document[index],
+                                index)
+                ));
+    }
+}
+
+template<typename T>
+vector<vector<T>> Pattern<T>::RenderWithTags(vector<string> tags, const Pattern::TDocument &document) {
+    auto result = vector<vector<pair<vector<string>, TLine>>>();
+
+    for (int index = 0; index < document.size(); index++) {
+        result.push_back(
+                std::move(
+                        RenderWithTags(
+                                tags,
+                                document[index],
+                                index)
+                ));
+    }
+}
+
+template<typename T>
+vector<T> Pattern<T>::Render(const Pattern::TLine &line, unsigned int lineIndex) {
+    auto result = TLineSubvectors();
+
+    for (TSubvector subvector: subvectors[lineIndex]) {
+        subvector->Render(&result, line);
+    }
+
+    return result;
+}
+
+template<typename T>
+vector<vector<T>> Pattern<T>::Render(const Pattern::TDocument &document) {
+    auto result = TDocumentSubvectors();
+
+    for (int index = 0; index < document.size(); index++) {
+        result.push_back(
+                std::move(
+                        Render(
+                                document[index],
+                                index)
+                ));
+    }
+}
+
+template<typename T>
+vector<vector<T>> Pattern<T>::Reverse(const Pattern::TDocument &document, vector<string> tags, vector<T> toReplaceWith) {
+    auto result = TDocument();
+    auto prevSubstringEnd = 0;
+
+    for (int index = 0; index < document.size(); index++) {
+        result.push_back(TLine());
+
+        for (auto substring : *this) {
+            Util<T>::Merge(result[result.size() - 1], std::move(substring->Reverse(tags, toReplaceWith, document[index], prevSubstringEnd)));
+        }
+
+        if (prevSubstringEnd < document[index].size())
+            Util<T>::Merge(result,
+                           Util<T>::Slice(
+                                   document[index],
+                                   prevSubstringEnd,
+                                   document[index].size() - prevSubstringEnd
+                           ));
+    }
+
+    return result;
+}
+
+template<typename T>
+vector<vector<T>> Pattern<T>::Reverse(const Pattern::TDocument &document, vector<T> toReplaceWith) {
+    auto result = TDocument();
+    auto prevSubstringEnd = 0;
+
+    for (int index = 0; index < document.size(); index++) {
+        result.push_back(TLine());
+
+        for (auto substring : *this) {
+            Util<T>::Merge(result[result.size() - 1], std::move(substring->Reverse(toReplaceWith, document[index], prevSubstringEnd)));
+        }
+
+        if (prevSubstringEnd < document[index].size())
+            Util<T>::Merge(result,
+                           Util<T>::Slice(
+                                   document[index],
+                                   prevSubstringEnd,
+                                   document[index].size() - prevSubstringEnd
+                           ));
+    }
+
+    return result;
+}
+
+template<typename T>
+void Pattern<T>::AddQuery(Pattern::TQuery &query) {
+    queries.push_back(query);
 }
 
 
@@ -72,6 +229,10 @@ void Process(Feed<vector<T>> *_self, vector<T> line) {
 
                 startPosition = endPosition;
             }
+        }
+
+        if (query.tags.empty()) {
+            self->NewLayer();
         }
     }
 

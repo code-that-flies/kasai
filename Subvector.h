@@ -29,16 +29,24 @@ public:
 
     ~Subvector();
 
-    void new_layer();
+    void NewLayer();
 
     bool _push_back(int start, int end, vector<string> tags);
     bool push_back(int start, int end, vector<string> tags);
 
-    void render(vector<vector<T>> * result, const vector<T>& raw, string tag = "");
+    void Render(vector<vector<T>> * result, const vector<T>& raw, string tag = "");
 
-    void render_with_tags(vector<pair<string, T>> *result, const vector<T>& raw);
+    void RenderWithTags(vector<pair<string, T>> *result, const vector<T>& raw);
+    void RenderWithTags(vector<string> tags, vector<pair<string, T>> *result, const vector<T>& raw);
 
-    // Produces the reverse of render, reproducing a raw
+    // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
+    vector<T> Reverse(vector<T> toReplaceWith, vector<T> line, int &prevSubstringEnd);
+
+    // Replaces the subvector's highlighted contents and replaces it with toReplaceWith
+    // but filtered to be only those with tags that intersect with the parameter 'tags' TODO: test thoroughly
+    vector<T> Reverse(vector<string> tags, vector<T> toReplaceWith, vector<T> line, int &prevSubstringEnd);
+
+    // Produces the reverse of Render, reproducing a raw
     // but using the given replacements instead of the original matches
     vector<T> Reverse(vector<T> toReplaceWith, const vector<T>& raw, int& prevSubvectorEnd);
 
@@ -48,7 +56,6 @@ public:
 
     void SetTag(string tag);
 };
-
 
 template<class T>
 Subvector<T>::Subvector(int start, int end) {
@@ -61,14 +68,6 @@ template<class T>
 Subvector<T>::~Subvector() {
     for (auto val : subvectors) {
         delete val;
-    }
-}
-
-template<class T>
-void Subvector<T>::new_layer() {
-    layer++;
-    for (Subvector* subvector : subvectors) {
-        subvector->new_layer();
     }
 }
 
@@ -119,11 +118,11 @@ bool Subvector<T>::push_back(int start, int end, vector<string> tags) {
 }
 
 template<class T>
-void Subvector<T>::render(vector<vector<T>> *result, const vector<T>& raw, string tag) {
+void Subvector<T>::Render(vector<vector<T>> *result, const vector<T>& raw, string tag) {
 
     if (tag != "") {
         for (Subvector* subarray : subvectors) {
-            subarray->render(result, raw);
+            subarray->Render(result, raw);
         }
 
         if (subvectors.empty() && layer < 2 && GetTag() == tag) {
@@ -135,7 +134,7 @@ void Subvector<T>::render(vector<vector<T>> *result, const vector<T>& raw, strin
     }
     else {
         for (Subvector* subarray : subvectors) {
-            subarray->render(result, raw);
+            subarray->Render(result, raw);
         }
 
         if (subvectors.empty() && layer < 2 && Util<string>::Has(this->tags, tag)) {
@@ -192,17 +191,90 @@ string Subvector<T>::GetTag(int index) {
 }
 
 template<class T>
-void Subvector<T>::render_with_tags(vector<pair<string, T>> *result, const vector<T>& raw) {
+void Subvector<T>::RenderWithTags(vector<pair<string, T>> *result, const vector<T>& raw) {
     for (Subvector* subarray : subvectors) {
-        subarray->render_with_tags(result, raw);
+        subarray->RenderWithTags(result, raw);
     }
 
     auto tag = GetTag(0); // TODO: use a tag class so that the tags are not lost
     if (tag != "") {
         if (subvectors.empty() && layer < 2) {
             vector<T> array;
-            result->push_back(pair(tag, Util<T>::Slice(raw, array, this->min, this->max - this->min)));
+            result->push_back(pair(this->tags, Util<T>::Slice(raw, array, this->min, this->max - this->min)));
         }
+    }
+}
+
+template<class T>
+void Subvector<T>::RenderWithTags(vector<string> tags, vector<pair<string, T>> *result, const vector<T>& raw) {
+    for (Subvector* subarray : subvectors) {
+        subarray->RenderWithTags(tags, result, raw);
+    }
+
+    // TODO: use a tag class so that the tags are not lost
+    if (!this->tags.empty()) {
+        if (Util<string>::Intersects(tags, this->tags)) {
+            if (subvectors.empty() && layer < 2) {
+                vector<T> array;
+                result->push_back(pair(this->tags, Util<T>::Slice(raw, array, this->min, this->max - this->min)));
+            }
+        }
+    }
+}
+
+template<class T>
+vector<T> Subvector<T>::Reverse(vector<T> toReplaceWith, vector<T> line, int &prevSubstringEnd) {
+    auto _prevSubstringEnd = prevSubstringEnd;
+    if (layer > 1) {
+        vector<T> result;
+        for (int index = 0; index < subvectors.size(); index++) {
+            auto current = subvectors[index];
+            Util<T>::Merge(result, current->_replace_all(toReplaceWith, line, prevSubstringEnd));
+        }
+
+        return result;
+    } else if (subvectors.empty()) {
+        prevSubstringEnd = max;
+
+        auto anchor = std::max(0, _prevSubstringEnd);
+
+        return Util<T>::Merge(Util<T>::Slice(line, anchor, min - anchor), toReplaceWith);
+    } else {
+        return vector<T>();
+    }
+}
+
+template<class T>
+vector<T> Subvector<T>::Reverse(vector<string> tags, vector<T> toReplaceWith, vector<T> line, int &prevSubstringEnd) {
+    auto _prevSubstringEnd = prevSubstringEnd;
+    if (layer > 1) {
+        vector<T> result;
+        for (int index = 0; index < subvectors.size(); index++) {
+            auto current = subvectors[index];
+            Util<T>::Merge(result, current->_replace_all(tags, toReplaceWith, line, prevSubstringEnd));
+        }
+
+        return result;
+    } else if (subvectors.empty()) {
+        prevSubstringEnd = max;
+        auto anchor = std::max(0, _prevSubstringEnd);
+
+        if (Util<T>::Intersects(tags, this->tags)) {
+            return Util<T>::Merge(Util<T>::Slice(line, anchor, min - anchor), toReplaceWith);
+        } else {
+            auto result = vector<T>();
+            return Util<T>::Slice(line, result, anchor, max - anchor);
+        }
+    } else {
+        return vector<T>();
+    }
+}
+
+template<class T>
+void Subvector<T>::NewLayer() {
+    layer++;
+    for (Subvector *subvector : subvectors) {
+        subvector->NewLayer();
     }
 }
 

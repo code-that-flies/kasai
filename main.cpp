@@ -123,7 +123,7 @@ int main() {
     Subvector<char> test(0, 10);
     vector<vector<char>> result;
     vector<char> chars = {'a', 'b', 'c'};
-    test.render(&result, chars, "test2");
+    test.Render(&result, chars, "test2");
 
     Query<char> charSet;
     charSet.Add('c', MatchMakkr320, true, nullptr);
