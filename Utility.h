@@ -31,4 +31,6 @@ typedef bool (*BoolComparator)(Prototype*, bool);
 typedef Prototype (*MemberFunction)(Prototype*, Prototype*);
 typedef Prototype& (*event_watcher)(const Prototype*);
 
+Prototype* Parse(string type, string command);
+
 #endif //KASAI_UTILITY_H

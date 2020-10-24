@@ -5,9 +5,6 @@
 #include "PrototypeEngine.h"
 #include "Prototype.h"
 
-PrototypeEngine* PrototypeEngine::prototypeEngine = new PrototypeEngine();
-unsigned int PrototypeEngine::IDENTITY = 0;
-
 void PrototypeEngine::RegisterPrototype(string name, Prototype *prototype) {
     if (this->ptr_by_name.find(name) == this->ptr_by_name.end()) {
         this->ptr_by_name[name] = vector<Prototype*>();
@@ -35,5 +32,13 @@ void PrototypeEngine::Bind(string name, Prototype * query, bool overwrite) {
         boundQueries_by_tag[name] = query;
     else if (overwrite)
         boundQueries_by_tag[name] = query;
+}
+
+void PrototypeEngine::End() {
+    delete EventEngine::events;
+
+    for( auto const& [key, val] : File::files ) {
+        delete val;
+    }
 }
 // TESTING NEW USERNAME

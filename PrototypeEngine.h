@@ -18,22 +18,11 @@ public:
 
     map<string, Prototype*> boundQueries_by_tag;
 
-    static unsigned int IDENTITY;
-
-    static PrototypeEngine* prototypeEngine;
-
     void RegisterPrototype(string name, Prototype* prototype);
 
     void Bind(string name, Prototype* query, bool override);
 
-    static void End() {
-        delete prototypeEngine;
-        delete EventEngine::events;
-
-        for( auto const& [key, val] : File::files ) {
-            delete val;
-        }
-    }
+    static void End();
 
     unsigned int MakeID(string name, Prototype* item);
 };

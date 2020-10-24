@@ -75,5 +75,4 @@ public:
 };
 
 
-
 #endif //KASAI_PROTOTYPE_H

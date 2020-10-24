@@ -11,17 +11,17 @@ using std::vector;
 using std::string;
 
 #include "Utility.h"
-
+class Node;
 
 class Table {
 public:
     class Data_Structure {
     public:
         Prototype* parent;
-        void AttemptToTriggerEvent(string name, string val);
-        void AttemptToTriggerEvent(string name, int val);
-        void AttemptToTriggerEvent(string name, float val);
-        void AttemptToTriggerEvent(string name, bool val);
+        void AttemptToTriggerEvent(Node* currentNode, string name, string val);
+        void AttemptToTriggerEvent(Node* currentNode, string name, int val);
+        void AttemptToTriggerEvent(Node* currentNode, string name, float val);
+        void AttemptToTriggerEvent(Node* currentNode, string name, bool val);
     };
 
     class Column : public vector<Prototype*>, public Data_Structure {
@@ -42,15 +42,15 @@ public:
     class Row : public map<string, Prototype*>, public Data_Structure {
     public:
 
-        void append(string name, string val, bool override);
-        void append(string name, int val, bool override);
-        void append(string name, float val, bool override);
-        void append(string name, bool val, bool override);
-        void append(string name, MemberFunction mb_fn, bool override);
+        void append(Node* currentNode, string name, string val, bool override);
+        void append(Node* currentNode, string name, int val, bool override);
+        void append(Node* currentNode, string name, float val, bool override);
+        void append(Node* currentNode, string name, bool val, bool override);
+        void append(Node* currentNode, string name, MemberFunction mb_fn, bool override);
 
 
-        void commit(string name, Prototype* prototype);
-        void commit(string name, string val, ETYPE etype);
+        void commit(Node* currentNode, string name, Prototype* prototype);
+        void commit(Node* currentNode, string name, string val, ETYPE etype);
 
     };
     // TODO

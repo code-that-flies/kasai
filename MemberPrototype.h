@@ -9,6 +9,7 @@
 #include "Prototype.h"
 #include "PrototypeEngine.h"
 #include "EventEngine.h"
+#include "Node.h"
 
 class MemberPrototype : public Prototype {
 public:
@@ -16,10 +17,10 @@ public:
 
     MemberPrototype(MemberFunction value);
 
-    Prototype Run(Prototype* self, Prototype* input) {
-        EventEngine::Trigger(PrototypeEngine::prototypeEngine->name_by_id[self->identity]
+    Prototype Run(Node* currentNode, Prototype* self, Prototype* input) {
+        EventEngine::Trigger(currentNode->prototypeEngine->name_by_id[self->identity]
                              + "::"
-                             + PrototypeEngine::prototypeEngine->name_by_id[this->identity]
+                             + currentNode->prototypeEngine->name_by_id[this->identity]
         , self
         );
 

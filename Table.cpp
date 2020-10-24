@@ -46,58 +46,58 @@ Table::Column::Column() {
 }
 
 
-void Table::Row::append(string name, string val, bool override) {
+void Table::Row::append(Node* currentNode, string name, string val, bool override) {
     if (this->find(name) == this->end() || override) {
         auto* item = new TypedPrototype<string>(val, ETYPE::STRING);
-        item->identity = PrototypeEngine::prototypeEngine->MakeID(name, item);
+        item->identity = currentNode->prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
     }
 }
 
-void Table::Row::append(string name, bool val, bool override) {
+void Table::Row::append(Node* currentNode, string name, bool val, bool override) {
     if (this->find(name) == this->end() || override) {
         auto* item = new TypedPrototype<bool>(val, ETYPE::BOOL);
-        item->identity = PrototypeEngine::prototypeEngine->MakeID(name, item);
+        item->identity = currentNode->prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
 
     }
 }
 
-void Table::Row::append(string name, int val, bool override) {
+void Table::Row::append(Node* currentNode, string name, int val, bool override) {
     if (this->find(name) == this->end() || override) {
         auto* item =  new TypedPrototype<int>(val, ETYPE::INT);
-        item->identity = PrototypeEngine::prototypeEngine->MakeID(name, item);
+        item->identity = currentNode->prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
 
     }
 }
 
-void Table::Row::append(string name, float val, bool override) {
+void Table::Row::append(Node* currentNode, string name, float val, bool override) {
     if (this->find(name) == this->end() || override) {
         auto* item = new TypedPrototype<float>(val, ETYPE::FLOAT);
-        item->identity = PrototypeEngine::prototypeEngine->MakeID(name, item);
+        item->identity = currentNode->prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
 
     }
 }
 
-void Table::Row::append(string name, MemberFunction mb_fn, bool override) {
+void Table::Row::append(Node* currentNode, string name, MemberFunction mb_fn, bool override) {
     if (this->find(name) == this->end() || override) {
         auto* item = new MemberPrototype(mb_fn);
-        item->identity = PrototypeEngine::prototypeEngine->MakeID(name, item);
+        item->identity = currentNode->prototypeEngine->MakeID(name, item);
         (*this)[name] = item;
 
     }
 }
 
 // Override is always
-void Table::Row::commit(string name, string val, ETYPE etype) {
+void Table::Row::commit(Node* currentNode, string name, string val, ETYPE etype) {
     // TODO ( this->commit(name, parse(val, etype)) );
 }
 
 // Override is always
-void Table::Row::commit(string name, Prototype *item) {
-    item->identity = PrototypeEngine::prototypeEngine->MakeID(name, item);
+void Table::Row::commit(Node* currentNode, string name, Prototype *item) {
+    item->identity = currentNode->prototypeEngine->MakeID(name, item);
     (*this)[name] = item;
 }
 
@@ -119,12 +119,12 @@ bool BoolComparison(Prototype* prototype, bool value) {
 }
 
 // TODO: test and VALIDATE cursor / searchDepth iteration count
-void Table::Data_Structure::AttemptToTriggerEvent(string name, string val) {
+void Table::Data_Structure::AttemptToTriggerEvent(Node* currentNode, string name, string val) {
     // Search the search queries bound to events for commits
     // Remember the search depth
     // Use the search depth and go to the destination and go up by that depth amount and has() with the query from there to double check that the commit has a match
 
-    for (auto const&[eventName, query] : PrototypeEngine::prototypeEngine->boundQueries_by_tag) {
+    for (auto const&[eventName, query] : currentNode->prototypeEngine->boundQueries_by_tag) {
         auto searchDepth = -1;
 
         auto searchResult = query->search(name, val, StrComparison, searchDepth);
@@ -147,12 +147,12 @@ void Table::Data_Structure::AttemptToTriggerEvent(string name, string val) {
 }
 
 // TODO: test and VALIDATE cursor / searchDepth iteration count
-void Table::Data_Structure::AttemptToTriggerEvent(string name, int val) {
+void Table::Data_Structure::AttemptToTriggerEvent(Node* currentNode, string name, int val) {
     // Search the search queries bound to events for commits
     // Remember the search depth
     // Use the search depth and go to the destination and go up by that depth amount and has() with the query from there to double check that the commit has a match
 
-    for (auto const&[eventName, query] : PrototypeEngine::prototypeEngine->boundQueries_by_tag) {
+    for (auto const&[eventName, query] : currentNode->prototypeEngine->boundQueries_by_tag) {
         auto searchDepth = -1;
 
         query->search(name, val, IntComparison, searchDepth);
@@ -172,12 +172,12 @@ void Table::Data_Structure::AttemptToTriggerEvent(string name, int val) {
 }
 
 // TODO: test and VALIDATE cursor / searchDepth iteration count
-void Table::Data_Structure::AttemptToTriggerEvent(string name, float val) {
+void Table::Data_Structure::AttemptToTriggerEvent(Node* currentNode, string name, float val) {
     // Search the search queries bound to events for commits
     // Remember the search depth
     // Use the search depth and go to the destination and go up by that depth amount and has() with the query from there to double check that the commit has a match
 
-    for (auto const&[eventName, query] : PrototypeEngine::prototypeEngine->boundQueries_by_tag) {
+    for (auto const&[eventName, query] : currentNode->prototypeEngine->boundQueries_by_tag) {
         auto searchDepth = -1;
 
         query->search(name, val, FloatComparison, searchDepth);
@@ -197,12 +197,12 @@ void Table::Data_Structure::AttemptToTriggerEvent(string name, float val) {
 }
 
 // TODO: test and VALIDATE cursor / searchDepth iteration count
-void Table::Data_Structure::AttemptToTriggerEvent(string name, bool val) {
+void Table::Data_Structure::AttemptToTriggerEvent(Node* currentNode, string name, bool val) {
     // Search the search queries bound to events for commits
     // Remember the search depth
     // Use the search depth and go to the destination and go up by that depth amount and has() with the query from there to double check that the commit has a match
 
-    for (auto const&[eventName, query] : PrototypeEngine::prototypeEngine->boundQueries_by_tag) {
+    for (auto const&[eventName, query] : currentNode->prototypeEngine->boundQueries_by_tag) {
         auto searchDepth = -1;
 
         query->search(name, val, BoolComparison, searchDepth);
