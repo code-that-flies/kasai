@@ -2,6 +2,8 @@
 // Created by Nathaniel Blair on 27/9/20.
 //
 
+#include <cassert>
+
 #include "Primal.h"
 
 Primal::Command::Command(vector<string> tags, string command) : tags(tags), command(command) {
@@ -34,6 +36,8 @@ void Primal::NewThread() {
 void Primal::End() {
     for(auto* thread: children) {
         thread->endFlag = true;
+
+        assert(thread->thread.joinable()); // Checks if the thread is still operating
         thread->thread.join();
     }
 }
