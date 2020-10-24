@@ -5,8 +5,12 @@
 #include "Thread.h"
 #include "Primal.h"
 
-Thread::Thread(Primal* parent) : parent(parent), thread(&Run, this), endFlag(false) {
+Thread::Thread(Primal* parent)
+: parent(parent), thread(&Run, this), endFlag(false),
+Node(new PrototypeEngine(), new EventEngine(), new File()) {
     parent->Child(this);
+
+    // TODO: intialise fileHandler with correct directory
 }
 
 bool Thread::AttemptNewCommand() {

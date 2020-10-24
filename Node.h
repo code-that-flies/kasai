@@ -15,7 +15,7 @@ public:
     File* fileHandler;
     vector<Node*> friends;
 
-    Node() {
+    Node() : fileHandler(nullptr), eventEngine(nullptr), prototypeEngine(nullptr) {
         // Do nothing
     }
 

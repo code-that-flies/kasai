@@ -20,8 +20,7 @@ void Primal::Child(Thread *child) {
     this->Connect(child);
 }
 
-Primal::Primal()
-: Node(new PrototypeEngine(), new EventEngine(), new File()),
+Primal::Primal() :
 results(map<int, Prototype>()),
 resultsMutex(std::mutex()) {
 
@@ -43,7 +42,7 @@ void Primal::End() {
 }
 
 void Primal::MergeIntoResult(Prototype *result, unsigned int index) {
-    std::lock_guard<std::mutex> guard(resultsMutex);
+    std::lock_guard<std::mutex> guard(resultsMutex); // Protects the results-vector from asynchronous competition
 
 
     if (results.find(index) != results.end())
