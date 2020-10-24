@@ -39,7 +39,6 @@ public:
     vector<pair<vector<string>, vector<T>>> RenderWithTags(const TLine& line, unsigned int lineIndex);
 
     vector<vector<T>> RenderWithTags(const TDocument& document);
-
     vector<vector<T>> RenderWithTags(vector<string> tags, const TDocument& document);
 
     vector<T> Render(const TLine& line, unsigned int lineIndex);
@@ -47,8 +46,8 @@ public:
     vector<vector<T>> Render(const TDocument& document);
 
     // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
+    // but filtered to be only those with tags that intersect with the parameter 'tags'
     vector<vector<T>> Reverse(const TDocument & document, vector<string> tags, vector<T> toReplaceWith);
-
     // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
     vector<vector<T>> Reverse(const TDocument & document, vector<T> toReplaceWith);
 
@@ -157,7 +156,7 @@ vector<vector<T>> Pattern<T>::Reverse(const Pattern::TDocument &document, vector
     for (int index = 0; index < document.size(); index++) {
         result.push_back(TLine());
 
-        for (auto substring : *this) {
+        for (auto substring : this->subvectors[index]) {
             Util<T>::Merge(result[result.size() - 1], std::move(substring->Reverse(tags, toReplaceWith, document[index], prevSubstringEnd)));
         }
 

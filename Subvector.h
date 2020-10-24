@@ -41,13 +41,10 @@ public:
 
     // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
     vector<T> Reverse(vector<T> toReplaceWith, vector<T> line, int &prevSubstringEnd);
-
     // Replaces the subvector's highlighted contents and replaces it with toReplaceWith
     // but filtered to be only those with tags that intersect with the parameter 'tags' TODO: test thoroughly
     vector<T> Reverse(vector<string> tags, vector<T> toReplaceWith, vector<T> line, int &prevSubstringEnd);
-
-    // Produces the reverse of Render, reproducing a raw
-    // but using the given replacements instead of the original matches
+    // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
     vector<T> Reverse(vector<T> toReplaceWith, const vector<T>& raw, int& prevSubvectorEnd);
 
     string GetTag(int index=0);
