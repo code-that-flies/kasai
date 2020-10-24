@@ -10,9 +10,14 @@ Thread::Thread(Primal* parent) : parent(parent), thread(&Run, this), endFlag(fal
 }
 
 bool Thread::AttemptNewCommand() {
+    Prototype* result = nullptr;
     if (parent->commands.size() - 1 > this->latestCommandIndex) {
         for (this->latestCommandIndex += 1; this->latestCommandIndex <= parent->commands.size(); latestCommandIndex++) {
-            Parse(parent->commands[latestCommandIndex].tags[0], parent->commands[latestCommandIndex].command);
+            result = Parse(parent->commands[latestCommandIndex].tags[0], parent->commands[latestCommandIndex].command);
+
+            if (result != nullptr) {
+                parent->MergeIntoResult(result, latestCommandIndex);
+            }
         }
 
         return true;

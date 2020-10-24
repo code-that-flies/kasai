@@ -17,8 +17,8 @@ void EventEngine::End(string event_name) {
     eventLog->WriteLine("End:\t\t" + event_name);
 }
 
-EventEngine::EventEngine() : latestProcessedEvent(-1) {
-
+EventEngine::EventEngine() : latestProcessedEvent(-1), eventLog(new File()) {
+//    eventLog->directory = ""; // TODO: map directories per thread
 }
 
 void EventEngine::Add(string event_name, event_watcher eventWatcher) {

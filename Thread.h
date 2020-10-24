@@ -7,7 +7,7 @@
 
 
 #include "Node.h"
-#include <Thread>
+#include <thread>
 
 class Primal;
 class Prototype;
@@ -20,7 +20,7 @@ public:
 
     Prototype* root;
 
-    Thread(Primal* parent);
+    explicit Thread(Primal* parent);
 
     bool AttemptNewCommand();
 };

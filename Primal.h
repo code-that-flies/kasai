@@ -24,17 +24,21 @@ public:
         string command;
 
         Command(vector<string> tags, string command);
+        Command(string type, string command);
     };
 
 
     vector<Thread*> children;
     vector<Command> commands;
+    map<int, Prototype> results;
 
     void Child(Thread* child);
 
     Primal();
 
     void NewThread();
+
+    void MergeIntoResult(Prototype* result, unsigned int index);
 
     void End();
 };

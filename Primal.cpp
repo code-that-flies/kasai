@@ -8,6 +8,11 @@ Primal::Command::Command(vector<string> tags, string command) : tags(tags), comm
     // Do nothing
 }
 
+Primal::Command::Command(string type, string command) : command(command) {
+    this->tags = vector<string>();
+    tags.push_back(type);
+}
+
 void Primal::Child(Thread *child) {
     this->children.push_back(child);
     this->Connect(child);
@@ -18,7 +23,7 @@ Primal::Primal() : Node(new PrototypeEngine(), new EventEngine(), new File()){
 }
 
 void Primal::NewThread() {
-    Thread* thread = new Thread(this);
+    auto* thread = new Thread(this);
 
     Child(thread);
 }
@@ -28,4 +33,13 @@ void Primal::End() {
         thread->endFlag = true;
         thread->thread.join();
     }
+}
+
+void Primal::MergeIntoResult(Prototype *result, unsigned int index) {
+    if (results.find(index) != results.end())
+        results[index] = *result;
+    else
+        results[index].merge(*result->subvalues_col);
+    // Tidy up
+    delete result;
 }
