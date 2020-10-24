@@ -27,6 +27,7 @@ public:
         Command(string type, string command);
     };
 
+    std::mutex resultsMutex;
 
     vector<Thread*> children;
     vector<Command> commands;
