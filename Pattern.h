@@ -38,18 +38,26 @@ public:
     vector<pair<vector<string>, vector<T>>> RenderWithTags(vector<string> tags, const TLine & line, unsigned int lineIndex);
     vector<pair<vector<string>, vector<T>>> RenderWithTags(const TLine& line, unsigned int lineIndex);
 
-    vector<vector<T>> RenderWithTags(const TDocument& document);
-    vector<vector<T>> RenderWithTags(vector<string> tags, const TDocument& document);
+    vector<vector<pair<vector<string>, typename Pattern<T>::TLine>>> RenderWithTags(const TDocument& document);
+    vector<vector<pair<vector<string>, typename Pattern<T>::TLine>>> RenderWithTags(vector<string> tags, const TDocument& document);
 
     vector<T> Render(const TLine& line, unsigned int lineIndex);
-
     vector<vector<T>> Render(const TDocument& document);
+
+    vector<string> RenderString(const vector<string>& document);
+    string RenderString(const string line, unsigned int lineIndex);
 
     // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
     // but filtered to be only those with tags that intersect with the parameter 'tags'
     vector<vector<T>> Reverse(const TDocument & document, vector<string> tags, vector<T> toReplaceWith);
     // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
     vector<vector<T>> Reverse(const TDocument & document, vector<T> toReplaceWith);
+
+    // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
+    // but filtered to be only those with tags that intersect with the parameter 'tags'
+    vector<vector<T>> ReverseString(const vector<string> & document, vector<string> tags, string toReplaceWith);
+    // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
+    vector<vector<T>> ReverseString(const vector<string> & document, string toReplaceWith);
 
     void AddQuery(TQuery& query);
 
@@ -95,7 +103,7 @@ vector<pair<vector<string>, vector<T>>> Pattern<T>::RenderWithTags(const Pattern
 }
 
 template<typename T>
-vector<vector<T>> Pattern<T>::RenderWithTags(const Pattern::TDocument &document) {
+vector<vector<pair<vector<string>, typename Pattern<T>::TLine>>> Pattern<T>::RenderWithTags(const Pattern::TDocument &document) {
     auto result = vector<vector<pair<vector<string>, TLine>>>();
 
     for (int index = 0; index < document.size(); index++) {
@@ -109,7 +117,7 @@ vector<vector<T>> Pattern<T>::RenderWithTags(const Pattern::TDocument &document)
 }
 
 template<typename T>
-vector<vector<T>> Pattern<T>::RenderWithTags(vector<string> tags, const Pattern::TDocument &document) {
+vector<vector<pair<vector<string>, typename Pattern<T>::TLine>>> Pattern<T>::RenderWithTags(vector<string> tags, const Pattern::TDocument &document) {
     auto result = vector<vector<pair<vector<string>, TLine>>>();
 
     for (int index = 0; index < document.size(); index++) {
@@ -121,11 +129,13 @@ vector<vector<T>> Pattern<T>::RenderWithTags(vector<string> tags, const Pattern:
                                 index)
                 ));
     }
+
+    return result;
 }
 
 template<typename T>
 vector<T> Pattern<T>::Render(const Pattern::TLine &line, unsigned int lineIndex) {
-    auto result = TLineSubvectors();
+    auto result = TLine();
 
     for (TSubvector subvector: subvectors[lineIndex]) {
         subvector->Render(&result, line);
@@ -135,8 +145,13 @@ vector<T> Pattern<T>::Render(const Pattern::TLine &line, unsigned int lineIndex)
 }
 
 template<typename T>
+string Pattern<T>::RenderString(const string line, unsigned int lineIndex) {
+    return Util<T>::ToString(Render(Util<T>::FromString(line), lineIndex));
+}
+
+template<typename T>
 vector<vector<T>> Pattern<T>::Render(const Pattern::TDocument &document) {
-    auto result = TDocumentSubvectors();
+    auto result = TDocument();
 
     for (int index = 0; index < document.size(); index++) {
         result.push_back(
@@ -146,6 +161,24 @@ vector<vector<T>> Pattern<T>::Render(const Pattern::TDocument &document) {
                                 index)
                 ));
     }
+
+    return result;
+}
+
+template<typename T>
+vector<string> Pattern<T>::RenderString(const vector<string> &document) {
+    auto result = vector<string>();
+
+    for (int index = 0; index < document.size(); index++) {
+        result.push_back(
+                    std::move(
+                            RenderString(
+                                    document[index],
+                                    index)
+                ));
+    }
+
+    return result;
 }
 
 template<typename T>
@@ -156,8 +189,8 @@ vector<vector<T>> Pattern<T>::Reverse(const Pattern::TDocument &document, vector
     for (int index = 0; index < document.size(); index++) {
         result.push_back(TLine());
 
-        for (auto substring : this->subvectors[index]) {
-            Util<T>::Merge(result[result.size() - 1], std::move(substring->Reverse(tags, toReplaceWith, document[index], prevSubstringEnd)));
+        for (auto subvector : this->subvectors[index]) {
+            Util<T>::Merge(result[result.size() - 1], std::move(subvector->Reverse(tags, toReplaceWith, document[index], prevSubstringEnd)));
         }
 
         if (prevSubstringEnd < document[index].size())
@@ -180,8 +213,8 @@ vector<vector<T>> Pattern<T>::Reverse(const Pattern::TDocument &document, vector
     for (int index = 0; index < document.size(); index++) {
         result.push_back(TLine());
 
-        for (auto substring : *this) {
-            Util<T>::Merge(result[result.size() - 1], std::move(substring->Reverse(toReplaceWith, document[index], prevSubstringEnd)));
+        for (auto subvector : *this) {
+            Util<T>::Merge(result[result.size() - 1], std::move(subvector->Reverse(toReplaceWith, document[index], prevSubstringEnd)));
         }
 
         if (prevSubstringEnd < document[index].size())
@@ -200,6 +233,68 @@ template<typename T>
 void Pattern<T>::AddQuery(Pattern::TQuery &query) {
     queries.push_back(query);
 }
+
+template<typename T>
+vector<vector<T>>
+Pattern<T>::ReverseString(const vector<string> &document, vector<string> tags, string toReplaceWith) {
+    auto rawResult = TDocument();
+    auto prevSubstringEnd = 0;
+
+    for (int index = 0; index < document.size(); index++) {
+        rawResult.push_back(TLine());
+
+        for (auto subvector : this->subvectors[index]) {
+            Util<T>::Merge(rawResult[rawResult.size() - 1], std::move(
+                    subvector->Reverse(tags, toReplaceWith, Util<T>::FromString(document[index]), prevSubstringEnd)));
+        }
+
+        if (prevSubstringEnd < document[index].size())
+            Util<T>::Merge(rawResult,
+                           Util<T>::Slice(
+                                   Util<T>::FromString(document[index]),
+                                   prevSubstringEnd,
+                                   document[index].size() - prevSubstringEnd
+                           ));
+    }
+
+    auto result = vector<string>();
+
+    for (auto item : rawResult) {
+        result.push_back(Util<T>::ToString(item));
+    }
+
+    return result;
+}
+
+template<typename T>
+vector<vector<T>> Pattern<T>::ReverseString(const vector<string> &document, string toReplaceWith) {
+    auto rawResult = TDocument();
+    auto prevSubstringEnd = 0;
+
+    for (int index = 0; index < document.size(); index++) {
+        rawResult.push_back(TLine());
+
+        for (auto subvector : this->subvectors[index]) {
+            Util<T>::Merge(rawResult[rawResult.size() - 1], std::move(
+                    subvector->Reverse(toReplaceWith, Util<T>::FromString(document[index]), prevSubstringEnd)));
+        }
+
+        if (prevSubstringEnd < document[index].size())
+            Util<T>::Merge(rawResult,
+                           Util<T>::Slice(
+                                   Util<T>::FromString(document[index]),
+                                   prevSubstringEnd,
+                                   document[index].size() - prevSubstringEnd
+                           ));
+    }
+
+    auto result = vector<string>();
+
+    for (auto item : rawResult) {
+        result.push_back(Util<T>::ToString(item));
+    }
+
+    return result;}
 
 
 template<class T>
