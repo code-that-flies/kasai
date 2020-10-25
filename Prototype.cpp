@@ -4,40 +4,9 @@
 
 #include "Prototype.h"
 #include "TypedPrototype.h"
+#include "Util.h"
 
-struct isValue
-{
-    string s_value;
-    int i_value;
-    float f_value;
-    bool b_value;
 
-    isValue(int value) : i_value(value) {}
-
-    isValue(string value) : s_value(value) {}
-
-    isValue(float value) : f_value(value) {}
-
-    isValue(bool value) : b_value(value) {}
-
-    bool operator()(const Prototype *prototype) const
-    {
-        if (prototype->etype == ETYPE::NONE)
-            return false;
-        else if (prototype->etype == ETYPE::STRING) {
-            return ((TypedPrototype<string>*)prototype)->value == s_value;
-        }
-        else if (prototype->etype == ETYPE::INT) {
-            return ((TypedPrototype<int>*)prototype)->value == i_value;
-        }
-        else if (prototype->etype == ETYPE::FLOAT) {
-            return ((TypedPrototype<float>*)prototype)->value == f_value;
-        }
-        else if (prototype->etype == ETYPE::BOOL) {
-            return ((TypedPrototype<bool>*)prototype)->value == b_value;
-        }
-    }
-};
 
 
 Prototype::Prototype() {
@@ -453,7 +422,7 @@ Prototype &Prototype::tag(string tag) {
     if (subvalues_row != nullptr) {
         if (subvalues_row->find("tags") != subvalues_row->end()) {
             auto tags = *(*subvalues_row)["tags"]->subvalues_col;
-            if (std::find_if(tags.begin(), tags.end(), isValue(0)) == tags.end()) {
+            if (std::find_if(tags.begin(), tags.end(), Util<string>::isValue(tag)) == tags.end()) {
                 tags.append(tag);
             }
         }
@@ -468,7 +437,7 @@ Prototype &Prototype::tag(string tag) {
 bool Prototype::has_tag(string tag) {
     if (subvalues_row->find("tags") != subvalues_row->end()) {
         auto tags = *(*subvalues_row)["tags"]->subvalues_col;
-        return std::find_if(tags.begin(), tags.end(), isValue(tag)) != tags.end();
+        return std::find_if(tags.begin(), tags.end(), Util<string>::isValue(tag)) != tags.end();
     }
     else {
         return false;

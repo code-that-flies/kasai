@@ -16,7 +16,7 @@ template <class T>
 void Process(Feed<vector<T>>* _self, vector<T> line);
 
 template <typename T>
-class Pattern : public Feed<vector<T>> {
+class Pattern : public Feed<vector<T>>, IReversible {
 public:
     typedef Subvector<T> TSubvector;
     typedef vector<TSubvector> TLineSubvectors;
@@ -44,8 +44,8 @@ public:
     vector<T> Render(const TLine& line, unsigned int lineIndex);
     vector<vector<T>> Render(const TDocument& document);
 
-    vector<string> RenderString(const vector<string>& document);
-    string RenderString(const string line, unsigned int lineIndex);
+    vector<string> Render(const vector<string>& document);
+    string Render(const string line, unsigned int lineIndex);
 
     // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
     // but filtered to be only those with tags that intersect with the parameter 'tags'
@@ -55,9 +55,9 @@ public:
 
     // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
     // but filtered to be only those with tags that intersect with the parameter 'tags'
-    vector<vector<T>> ReverseString(const vector<string> & document, vector<string> tags, string toReplaceWith);
+    vector<vector<T>> Reverse(const vector<string> & document, vector<string> tags, string toReplaceWith);
     // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
-    vector<vector<T>> ReverseString(const vector<string> & document, string toReplaceWith);
+    vector<vector<T>> Reverse(const vector<string> & document, string toReplaceWith);
 
     void AddQuery(TQuery& query);
 
@@ -145,7 +145,7 @@ vector<T> Pattern<T>::Render(const Pattern::TLine &line, unsigned int lineIndex)
 }
 
 template<typename T>
-string Pattern<T>::RenderString(const string line, unsigned int lineIndex) {
+string Pattern<T>::Render(const string line, unsigned int lineIndex) {
     return Util<T>::ToString(Render(Util<T>::FromString(line), lineIndex));
 }
 
@@ -166,13 +166,13 @@ vector<vector<T>> Pattern<T>::Render(const Pattern::TDocument &document) {
 }
 
 template<typename T>
-vector<string> Pattern<T>::RenderString(const vector<string> &document) {
+vector<string> Pattern<T>::Render(const vector<string> &document) {
     auto result = vector<string>();
 
     for (int index = 0; index < document.size(); index++) {
         result.push_back(
                     std::move(
-                            RenderString(
+                            Render(
                                     document[index],
                                     index)
                 ));
@@ -236,7 +236,7 @@ void Pattern<T>::AddQuery(Pattern::TQuery &query) {
 
 template<typename T>
 vector<vector<T>>
-Pattern<T>::ReverseString(const vector<string> &document, vector<string> tags, string toReplaceWith) {
+Pattern<T>::Reverse(const vector<string> &document, vector<string> tags, string toReplaceWith) {
     auto rawResult = TDocument();
     auto prevSubstringEnd = 0;
 
@@ -267,7 +267,7 @@ Pattern<T>::ReverseString(const vector<string> &document, vector<string> tags, s
 }
 
 template<typename T>
-vector<vector<T>> Pattern<T>::ReverseString(const vector<string> &document, string toReplaceWith) {
+vector<vector<T>> Pattern<T>::Reverse(const vector<string> &document, string toReplaceWith) {
     auto rawResult = TDocument();
     auto prevSubstringEnd = 0;
 

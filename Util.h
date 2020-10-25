@@ -12,6 +12,7 @@
 
 #include <string>
 #include <vector>
+#include "TypedPrototype.h"
 
 using std::vector;
 using std::string;
@@ -60,6 +61,20 @@ public:
         // Returns the reverse of In
         // ( AKA a 'built' [default] value as *output* )
         T Reverse();
+    };
+
+    // source: https://stackoverflow.com/a/35490321
+    struct isValue
+    {
+        T value;
+
+        isValue(T value) : value(value) {}
+
+        bool operator()(const Prototype *prototype) const
+        {
+            if (prototype->etype != ETYPE::NONE)
+                return ((TypedPrototype<T>*)prototype)->value == value;
+        }
     };
 };
 
