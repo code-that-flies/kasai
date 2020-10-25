@@ -16,7 +16,11 @@ using std::map;
 class Prototype;
 
 enum class ETYPE {
-    STRING, INT, FLOAT, BOOL, MEMBER_FUNCTION, JSON, XML, KASAI, NONE = 0
+    STRING, INT, FLOAT, BOOL,           // Simple types     // Implemented!
+    VEC, MATRIX, IMAGE, AUDIO, VIDEO,   // Complex types    // TODO: implement complex types
+    MEMBER_FUNCTION,                    // Code types       // TODO: implement code types
+    JSON, XML, KASAI,                   // Serializatia     // TODO: implement serialization types
+    NONE = 0
 };
 
 enum E_MERGE_MODE {
