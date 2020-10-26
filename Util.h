@@ -31,11 +31,15 @@ public:
     static vector<T> Intersection(const vector<T>& left, const vector<T>& right);
 
     // Source: https://leetcode.com/problems/intersection-of-two-arrays/discuss/82001/8ms-concise-C%2B%2B-using-unordered_set
+    // Returns a subset of vector<T>& right, that does not intersect with vector<T>& left.
     static vector<T> Difference(const vector<T>& left, const vector<T>& right);
 
     static bool Has(const vector<T>& raw, const T& query);
 
     static bool Same(const vector<T>& left, const vector<T>& right);
+
+    // Checks if left contains right
+    static bool Contains(const vector<T>& left, const vector<T>& right);
 
     static bool Intersects(const vector<T>& left, const vector<T>& right);
 
@@ -152,6 +156,18 @@ template<class T>
 bool Util<T>::Same(const vector<T>& left, const vector<T>& right) {
     auto correctLength = std::max(left.size(), right.size());
     return Intersection(left, right).size() == correctLength;
+}
+
+template<class T>
+bool Util<T>::Contains(const vector<T>& left, const vector<T>& right) {
+    auto intersectionLength = Intersection(left, right).size();
+
+    if (intersectionLength == right.size()) {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 template<class T>

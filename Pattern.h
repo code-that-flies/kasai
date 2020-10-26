@@ -5,6 +5,8 @@
 #ifndef KASAI_PATTERN_H
 #define KASAI_PATTERN_H
 
+#include <experimental/iterator>
+
 #include "Utility.h"
 #include "Feed.h"
 #include "Query.h"
@@ -18,6 +20,129 @@ void Process(Feed<vector<T>>* _self, vector<T> line);
 template <typename T>
 class Pattern : public Feed<vector<T>>, IReversible {
 public:
+
+    template <class TNodeValue>
+    struct Node : public TNodeValue {
+    public:
+        vector<string> tags;
+        map<string, Node<TNodeValue>*> * map_subnodes;
+        vector<pair<string, Node<TNodeValue>*>> * vec_subnodes;
+        int depth;
+
+        Node() : depth(0) {
+
+        }
+        Node(vector<string> tags, TNodeValue value) : depth(0), TNodeValue(value) {
+
+        }
+
+        ~Node() {
+            delete map_subnodes;
+            delete vec_subnodes;
+        }
+
+        string RenderTags() {
+            string result = "";
+
+            for (auto tag: tags) {
+                result += " " + tag;
+            }
+
+            return result;
+        }
+
+        void InitializeSubnodes() {
+            map_subnodes = new map<string, Node<TNodeValue>*>();
+            vec_subnodes = new vector<pair<string, Node<TNodeValue>*>>();
+        }
+
+        virtual void AddSubnode(Node<TNodeValue>* value) {
+            if (vec_subnodes == nullptr)
+                InitializeSubnodes();
+
+            for (auto it = vec_subnodes->rbegin(); it != vec_subnodes->end(); it++) {
+                auto fullname = (*it)->first;
+                auto* subnode = (*it)->second;
+
+                // TODO: optimize this block of code to pass around the
+                //  intersection for the difference calculation
+                if (Util<T>::Intersects(value->tags, subnode->tags)) {
+                    value->tags = Util<T>::Difference(subnode->tags, value->tags);
+
+                    value->depth++; // Increase node depth according to depth in the tree
+                    subnode->AddSubnode(value);
+                    return;
+                }
+            }
+
+            auto key = value->RenderTags();
+            map_subnodes[key] = value;
+            vec_subnodes->emplace_back(key, value);
+        }
+    };
+
+    template <class TNodeValue>
+    struct AbstractTree : public Node<TNodeValue> {
+    public:
+        vector<Node<TNodeValue>*> nodes;
+
+        ~AbstractTree() {
+            for (auto* node: nodes) {
+                delete node;
+            }
+        }
+
+        void AddSubnode(Node<TNodeValue> value) {
+            auto* toStore = new Node<TNodeValue>(value);
+
+            nodes.push_back(toStore);
+
+            Node<TNodeValue>::AddSubnode(toStore);
+        }
+
+        Node<TNodeValue>* GetFirstDeepestNodeWithTag(string tag) {
+            Node<TNodeValue>* candidateForResult = nullptr;
+
+            for (auto* node: nodes) {
+                if (Util<T>::Has(tag)) {
+                    if (candidateForResult->depth < node->depth) {
+                        candidateForResult = node;
+                    }
+                }
+            }
+
+            return candidateForResult;
+        }
+
+        Node<TNodeValue>* GetFirstDeepestNodeWithTag(vector<string> tags) {
+            Node<TNodeValue>* candidateForResult = nullptr;
+
+            for (auto* node: nodes) {
+                if (Util<T>::Contains(node->tags, tags)) {
+                    if (candidateForResult->depth < node->depth) {
+                        candidateForResult = node;
+                    }
+                }
+            }
+
+            return candidateForResult;
+        }
+
+        static AbstractTree<TNodeValue>* FromVector(vector<vector<pair<vector<string>, TNodeValue>>>& input) {
+            auto* result = new AbstractTree<TNodeValue>();
+
+            for (auto& lines: input) {
+                for (auto& pair: lines) {
+                    result->AddSubnode(Node<TNodeValue>(pair.first, pair.second));
+                }
+            }
+
+            return result;
+        }
+    };
+
+    typedef AbstractTree<string> AbstractSyntaxTree;
+
     typedef Subvector<T> TSubvector;
     typedef vector<TSubvector> TLineSubvectors;
     typedef vector<TLineSubvectors> TDocumentSubvectors;
@@ -36,10 +161,15 @@ public:
     void NewLayer();
 
     vector<pair<vector<string>, vector<T>>> RenderWithTags(vector<string> tags, const TLine & line, unsigned int lineIndex);
+    vector<pair<vector<string>, string>> RenderAsStringsWithTags(vector<string> tags, const string & line, unsigned int lineIndex);
     vector<pair<vector<string>, vector<T>>> RenderWithTags(const TLine& line, unsigned int lineIndex);
+    vector<pair<vector<string>, string>> RenderAsStringsWithTags(const string& line, unsigned int lineIndex);
 
     vector<vector<pair<vector<string>, typename Pattern<T>::TLine>>> RenderWithTags(const TDocument& document);
     vector<vector<pair<vector<string>, typename Pattern<T>::TLine>>> RenderWithTags(vector<string> tags, const TDocument& document);
+
+    vector<vector<pair<vector<string>, string>>> RenderAsStringsWithTags(const vector<string>& document);
+    vector<vector<pair<vector<string>, string>>> RenderAsStringsWithTags(vector<string> tags, const vector<string>& document);
 
     vector<T> Render(const TLine& line, unsigned int lineIndex);
     vector<vector<T>> Render(const TDocument& document);
@@ -58,6 +188,14 @@ public:
     vector<vector<T>> Reverse(const vector<string> & document, vector<string> tags, string toReplaceWith);
     // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
     vector<vector<T>> Reverse(const vector<string> & document, string toReplaceWith);
+
+    AbstractTree<vector<T>>* MakeTree(const TDocument& document) {
+        return AbstractTree<vector<T>>::FromVector(RenderWithTags(document));
+    }
+
+    AbstractSyntaxTree * MakeSyntaxTree(const vector<string>& document) {
+        return AbstractSyntaxTree::FromVector(RenderAsStringsWithTags(document));
+    }
 
     void AddQuery(TQuery& query);
 
@@ -92,6 +230,18 @@ Pattern<T>::RenderWithTags(vector<string> tags, const Pattern::TLine &line, unsi
 }
 
 template<typename T>
+vector<pair<vector<string>, string>>
+Pattern<T>::RenderAsStringsWithTags(vector<string> tags, const string& line, unsigned int lineIndex) {
+    auto result = vector<pair<vector<string>, vector<T>>>();
+
+    for (TSubvector subvector: subvectors[lineIndex]) {
+        subvector.RenderAsStringWithTags(&result, line, tags);
+    }
+
+    return result;
+}
+
+template<typename T>
 vector<pair<vector<string>, vector<T>>> Pattern<T>::RenderWithTags(const Pattern::TLine &line, unsigned int lineIndex) {
     auto result = vector<pair<vector<string>, TLine>>();
 
@@ -103,8 +253,33 @@ vector<pair<vector<string>, vector<T>>> Pattern<T>::RenderWithTags(const Pattern
 }
 
 template<typename T>
+vector<pair<vector<string>, string>> Pattern<T>::RenderAsStringsWithTags(const string& line, unsigned int lineIndex) {
+    auto result = vector<pair<vector<string>, string>>();
+
+    for (TSubvector subvector: subvectors[lineIndex]) {
+        subvector.RenderAsStringsWithTags(&result, Util<T>::FromString(line));
+    }
+
+    return result;
+}
+
+template<typename T>
 vector<vector<pair<vector<string>, typename Pattern<T>::TLine>>> Pattern<T>::RenderWithTags(const Pattern::TDocument &document) {
     auto result = vector<vector<pair<vector<string>, TLine>>>();
+
+    for (int index = 0; index < document.size(); index++) {
+        result.push_back(
+                std::move(
+                        RenderWithTags(
+                                document[index],
+                                index)
+                ));
+    }
+}
+
+template<typename T>
+vector<vector<pair<vector<string>, string>>> Pattern<T>::RenderAsStringsWithTags(const vector<string> &document) {
+    auto result = vector<vector<pair<vector<string>, string>>>();
 
     for (int index = 0; index < document.size(); index++) {
         result.push_back(
@@ -126,6 +301,24 @@ vector<vector<pair<vector<string>, typename Pattern<T>::TLine>>> Pattern<T>::Ren
                         RenderWithTags(
                                 tags,
                                 document[index],
+                                index)
+                ));
+    }
+
+    return result;
+}
+
+template<typename T>
+vector<vector<pair<vector<string>, string>>> Pattern<T>::RenderAsStringsWithTags(
+        vector<string> tags, const vector<string>& document) {
+    auto result = vector<vector<pair<vector<string>, string>>>();
+
+    for (int index = 0; index < document.size(); index++) {
+        result.push_back(
+                std::move(
+                        RenderAsStringsWithTags(
+                                tags,
+                                Util<T>::FromString(document[index]), // TODO: Optimize the pattern class to work faster with strings
                                 index)
                 ));
     }

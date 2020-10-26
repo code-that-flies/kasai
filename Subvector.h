@@ -39,6 +39,9 @@ public:
     void RenderWithTags(vector<pair<string, T>> *result, const vector<T>& raw);
     void RenderWithTags(vector<string> tags, vector<pair<string, T>> *result, const vector<T>& raw);
 
+    void RenderAsStringsWithTags(vector<string> tags, vector<pair<string, T>> *result, const vector<T>& raw);
+    void RenderAsStringsWithTags(vector<pair<string, T>> *result, const vector<T>& raw);
+
     // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
     vector<T> Reverse(vector<T> toReplaceWith, vector<T> line, int &prevSubstringEnd);
     // Replaces the subvector's highlighted contents and replaces it with toReplaceWith
@@ -214,6 +217,41 @@ void Subvector<T>::RenderWithTags(vector<string> tags, vector<pair<string, T>> *
             if (subvectors.empty() && layer < 2) {
                 vector<T> array;
                 result->push_back(pair(this->tags, Util<T>::Slice(raw, array, this->min, this->max - this->min)));
+            }
+        }
+    }
+}
+
+template<class T>
+void Subvector<T>::RenderAsStringsWithTags(vector<pair<string, T>> *result, const vector<T>& raw) {
+    for (Subvector* subarray : subvectors) {
+        subarray->RenderWithTags(result, raw);
+    }
+
+    auto tag = GetTag(0); // TODO: use a tag class so that the tags are not lost
+
+    // TODO: optimize (this whole Util<T> class for usage with strings
+    if (tag != "") {
+        if (subvectors.empty() && layer < 2) {
+            vector<T> array;
+            result->push_back(pair(this->tags, Util<T>::ToString(Util<T>::Slice(raw, array, this->min, this->max - this->min))));
+        }
+    }
+}
+
+template<class T>
+void Subvector<T>::RenderAsStringsWithTags(vector<string> tags, vector<pair<string, T>> *result, const vector<T>& raw) {
+    for (Subvector* subarray : subvectors) {
+        subarray->RenderWithTags(tags, result, raw);
+    }
+
+    // TODO: use a tag class so that the tags are not lost
+    // TODO: optimize (this whole Util<T> class for usage with strings
+    if (!this->tags.empty()) {
+        if (Util<string>::Intersects(tags, this->tags)) {
+            if (subvectors.empty() && layer < 2) {
+                vector<T> array;
+                result->push_back(pair(this->tags, Util<T>::ToString(Util<T>::Slice(raw, array, this->min, this->max - this->min))));
             }
         }
     }
