@@ -155,6 +155,7 @@ public:
     typedef Query<T> TQuery;
 
     TDocumentSubvectors subvectors;
+    list<Tag*> pairStarts;
     vector<TQuery> queries;
     unsigned int layer;
 
@@ -498,7 +499,7 @@ void Process(Feed<vector<T>> *_self, vector<T> line) {
 
 
     vector<Subvector<T>> subvectors;
-    list<Tag*> pairStarts = list<Tag*>();
+    self->pairStarts = list<Tag*>();
 
     for (Query<T> query: self->queries) {
         auto endPosition = 0;
@@ -513,18 +514,18 @@ void Process(Feed<vector<T>> *_self, vector<T> line) {
                 auto& mostRecentTag = query.tags[query.tags.size() - 1];
 
                 if (*mostRecentTag.meta == "start pair") {
-                    pairStarts.push_back(&mostRecentTag);
+                    self->pairStarts.push_back(&mostRecentTag);
                 }
-                else if (*mostRecentTag.meta == "end pair" && !pairStarts.empty()) {
-                    pairStarts.pop_back();
+                else if (*mostRecentTag.meta == "end pair" && !self->pairStarts.empty()) {
+                    self->pairStarts.pop_back();
                 }
 
                 Subvector<T> subvector = Subvector<T>(startPosition, endPosition);
                 for (auto tag: query.tags) {
                     subvector.AddTag(tag);
                 }
-                if (!pairStarts.empty())
-                    subvector.AddTag(pairStarts.back());
+                if (!self->pairStarts.empty())
+                    subvector.AddTag(*self->pairStarts.back());
 
                 subvectors.push_back(subvector);
 
