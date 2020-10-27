@@ -10,31 +10,27 @@
 #include <vector>
 #include <map>
 
-#include "Pattern.h"
+#include "Tag.h"
+#include "TallyTag.h"
 
 using std::string;
 using std::vector;
 using std::map;
 
-typedef bool (*CharacterFilter)(char, bool);
-class Tally : public map<char, int> {
+template <class T>
+class Tally : public map<Tag, unsigned int> {
 public:
-    map<char, string> names;
-    map<string, char> reverse_names;
-    map<CharacterFilter, string> group_names;
+    vector<TallyTag<T>*> tagsToTallyWith;
 
-    Tally(string& input);
+    Tally() {
+        tagsToTallyWith = vector<TallyTag<T>*>();
+    }
 
-    string Report();
-
-    string Name(char character, bool details = false);
-
-    int Get(string name);
-
-    void Initialize();
-
-    void push_back(char character, string name);
-
+    Tally(const vector<T>&input) {
+        for (const auto* item: tagsToTallyWith) {
+            *this[*item] = item->Tally(input);
+        }
+    }
 };
 
 

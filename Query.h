@@ -10,16 +10,21 @@
 #include "Util.h"
 #include "MatchmakerUtility.h"
 #include "IReversible.h"
-
+#include "Tag.h"
+#include "Tally.h"
 
 // TODO: test this function in conjunction with the pattern matcher
 template <class T>
 class Query : public IReversible {
 public:
+    class Meta {
+    public:
+        Tally<T> tally;
+    };
 
     // Each query has a given matchmaker.
     // This is the definition of a matchmaker!
-    typedef bool (*Matchmaker)(const vector<T>& raw, int& rawIndex, vector<T>& query, int& queryIndex, bool inverted, typename Util<T>::Range* range);
+    typedef bool (*Matchmaker)(const vector<T>& raw, int& rawIndex, vector<T>& query, int& queryIndex, bool inverted, typename Util<T>::Range* range, const Meta& metadata);
 
     // Query is an array of characters.
     // Being a match is a local 'success'
@@ -36,7 +41,8 @@ public:
     // generate Abstract Data Trees such as Abstract Syntax Trees
     // decide which parts of a raw[] to ignore as "already tagged"
     // and which parts of a raw[] to NOT ignore as "already tagged BUT with OVERLAPPING tags"
-    vector<string> tags;
+    vector<Tag> tags;
+    Meta metadata;
 
     // Prefixes are before the match and suffixes are after the match
     // (Suffixes will interrupt a -1 (aka unlimited) length repeat if matched successfully)
@@ -59,7 +65,7 @@ public:
 
     // Returns the reverse of match
     // (aka a re-'built' array)
-    vector<T> Reverse(T input[]);
+    vector<T> Reverse(const vector<T>& input);
 
     // Returns -1 is the match is a fail, returns the max position if the match is a 'success' overall
     int Match(const vector<T>& raw, int currentRawCharacter, int& currentQueryCharacter, int& currentQuery, int& direction);
@@ -99,7 +105,7 @@ bool Query<T>::TryMatch(const vector<T>& raw, int currentRawCharacter, int &curr
         range = &ranges[currentQuery];
     }
 
-    return matchmakers[currentQuery](raw, currentRawCharacter, query, currentQueryCharacter, isInverteds[currentQuery], range);
+    return matchmakers[currentQuery](raw, currentRawCharacter, query, currentQueryCharacter, isInverteds[currentQuery], range, metadata);
 }
 
 template<class T>
@@ -181,7 +187,7 @@ void Query<T>::Add(T queryValue, Query::Matchmaker matchmaker, bool isInverted, 
 }
 
 template<class T>
-vector<T> Query<T>::Reverse(T *input) {
+vector<T> Query<T>::Reverse(const vector<T>& input) {
     vector<T> result;
 
     if (prefixes.size() > 0)

@@ -496,6 +496,7 @@ void Process(Feed<vector<T>> *_self, vector<T> line) {
 
 
     vector<Subvector<T>> subvectors;
+    Tag* currentBlock = nullptr;
 
     for (Query<T> query: self->queries) {
         auto endPosition = 0;
@@ -507,10 +508,21 @@ void Process(Feed<vector<T>> *_self, vector<T> line) {
             endPosition = query.Match(line, startPosition, currentQueryCharacter, currentQuery, direction);
 
             if (endPosition != -1) {
+                auto& mostRecentTag = query.tags[query.tags.size() - 1];
+
+                if (*mostRecentTag.meta == "start pair") {
+                    currentBlock = &mostRecentTag;
+                }
+                else if (*mostRecentTag.meta == "end pair") {
+                    currentBlock = nullptr;
+                }
+
                 Subvector<T> subvector = Subvector<T>(startPosition, endPosition);
-                for (string tag: query.tags) {
+                for (auto tag: query.tags) {
                     subvector.AddTag(tag);
                 }
+                if (currentBlock)
+                    subvector.AddTag(*currentBlock);
 
                 subvectors.push_back(subvector);
 
