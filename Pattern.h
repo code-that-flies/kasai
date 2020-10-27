@@ -6,6 +6,7 @@
 #define KASAI_PATTERN_H
 
 #include <experimental/iterator>
+#include <list>
 
 #include "Utility.h"
 #include "Feed.h"
@@ -13,6 +14,7 @@
 #include "Subvector.h"
 
 
+using std::list;
 
 template <class T>
 void Process(Feed<vector<T>>* _self, vector<T> line);
@@ -496,7 +498,7 @@ void Process(Feed<vector<T>> *_self, vector<T> line) {
 
 
     vector<Subvector<T>> subvectors;
-    Tag* currentBlock = nullptr;
+    list<Tag*> pairStarts = list<Tag*>();
 
     for (Query<T> query: self->queries) {
         auto endPosition = 0;
@@ -511,18 +513,18 @@ void Process(Feed<vector<T>> *_self, vector<T> line) {
                 auto& mostRecentTag = query.tags[query.tags.size() - 1];
 
                 if (*mostRecentTag.meta == "start pair") {
-                    currentBlock = &mostRecentTag;
+                    pairStarts.push_back(&mostRecentTag);
                 }
-                else if (*mostRecentTag.meta == "end pair") {
-                    currentBlock = nullptr;
+                else if (*mostRecentTag.meta == "end pair" && !pairStarts.empty()) {
+                    pairStarts.pop_back();
                 }
 
                 Subvector<T> subvector = Subvector<T>(startPosition, endPosition);
                 for (auto tag: query.tags) {
                     subvector.AddTag(tag);
                 }
-                if (currentBlock)
-                    subvector.AddTag(*currentBlock);
+                if (!pairStarts.empty())
+                    subvector.AddTag(pairStarts.back());
 
                 subvectors.push_back(subvector);
 
