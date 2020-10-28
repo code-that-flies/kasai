@@ -490,7 +490,8 @@ vector<vector<T>> Pattern<T>::Reverse(const vector<string> &document, string toR
         result.push_back(Util<T>::ToString(item));
     }
 
-    return result;}
+    return result;
+}
 
 
 template<class T>
@@ -528,7 +529,12 @@ void Process(Feed<vector<T>> *_self, vector<T> line) {
                     self->pairStarts.pop_back();
                 }
 
-                Subvector<T> subvector = Subvector<T>(startPosition, endPosition);
+                // Initialize subvector (with start & end, and tags)
+                Subvector<T> subvector;
+                if (query.startFromEnd)
+                    subvector = Subvector<T>(endPosition, startPosition);
+                else
+                    subvector = Subvector<T>(startPosition, endPosition);
                 for (auto tag: query.tags) {
                     subvector.AddTag(tag);
                 }

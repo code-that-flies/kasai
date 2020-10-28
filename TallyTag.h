@@ -11,7 +11,7 @@
 template <class T>
 class TallyTag : public Tag {
 public:
-    TallyTag(string tag) : Tag(tag) {
+    TallyTag(const string& tag) : Tag(tag) {
 
     }
 

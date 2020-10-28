@@ -25,6 +25,8 @@ public:
     vector<string> tags;
     static const bool isClip = false;
 
+    Subvector();
+
     Subvector(int start, int end);
 
     ~Subvector();
@@ -311,6 +313,11 @@ void Subvector<T>::NewLayer() {
     for (Subvector *subvector : subvectors) {
         subvector->NewLayer();
     }
+}
+
+template<class T>
+Subvector<T>::Subvector() : Util<int>::Range(0, 0, false, -1), layer(0), tags(vector<string>()) {
+
 }
 
 #endif //KASAI_SUBVECTOR_H
