@@ -11,7 +11,11 @@
 class IndentationTallyTag : public TallyTag<char> {
     static unsigned int SPACES_PER_TAB;
 
-    unsigned int Tally(const vector<char>& raw) override {
+    IndentationTallyTag() : TallyTag("Indentation") {
+
+    }
+
+    int Tally(const vector<char>& raw) override {
         float result = 0;
 
         for (auto character: raw) {
@@ -26,7 +30,7 @@ class IndentationTallyTag : public TallyTag<char> {
             }
         }
 
-        return result;
+        return -1; // If the indentation is not followed up by non-whitespace, it is INVALID - thus, -1 is returned
     }
 };
 

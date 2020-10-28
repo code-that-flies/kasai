@@ -12,6 +12,7 @@ public:
 
     Tag* meta;
 
+
     ~Tag();
 
     Tag(string value) : string(value), meta(nullptr) {
@@ -23,6 +24,5 @@ public:
     }
 
 };
-
 
 #endif //KASAI_TAG_H

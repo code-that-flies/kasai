@@ -19,7 +19,14 @@ class Query : public IReversible {
 public:
     class Meta {
     public:
-        Tally<T> tally;
+        vector<TallyTag<T>*> tagsToTallyWith; // To be altered and customised by the developer who writes the matchmakers in current use
+        Tally<T> previousLineTally;
+        Tally<T> currentLineTally;
+
+        void Update(const vector<T>& raw) {
+            this->previousLineTally = std::move(this->currentLineTally);
+            this->currentLineTally = Tally(tagsToTallyWith, raw);
+        }
     };
 
     // Each query has a given matchmaker.
@@ -53,6 +60,8 @@ public:
     vector<Query> AND_queries;
     vector<Query> NOT_queries;
 
+    bool startFromEnd;
+
     vector<T> GenerateDefault();
 
     void AddPrefix(vector<T> prefix);
@@ -73,7 +82,7 @@ public:
 
 template<class T>
 void Query<T>::AddPrefix(vector<T> prefix) {
-    auto len = sizeof prefix / sizeof prefix[0];
+    auto len = prefix.size();
 
     T addition[len];
     Copy(prefix, addition);
@@ -140,7 +149,7 @@ int Query<T>::Match(const vector<T>& raw, int currentRawCharacter, int &currentQ
 
 
     int offset;
-    auto len = sizeof query / sizeof query[0];
+    auto len = query.size();
     for (offset = 0; offset < raw.size() && currentQuery < len && offset >= 0; offset+=direction) {
         // Do continuous repeat if the repeatAmount is -1
         if (repeatAmounts[offset] == -1) {

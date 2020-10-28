@@ -178,7 +178,7 @@ public:
     vector<vector<T>> Render(const TDocument& document);
 
     vector<string> Render(const vector<string>& document);
-    string Render(const string line, unsigned int lineIndex);
+    string Render(const string& line, unsigned int lineIndex);
 
     // Replaces the subvector's highlighted contents and replaces it with toReplaceWith TODO: test thoroughly
     // but filtered to be only those with tags that intersect with the parameter 'tags'
@@ -341,7 +341,7 @@ vector<T> Pattern<T>::Render(const Pattern::TLine &line, unsigned int lineIndex)
 }
 
 template<typename T>
-string Pattern<T>::Render(const string line, unsigned int lineIndex) {
+string Pattern<T>::Render(const string& line, unsigned int lineIndex) {
     return Util<T>::ToString(Render(Util<T>::FromString(line), lineIndex));
 }
 
@@ -503,11 +503,19 @@ void Process(Feed<vector<T>> *_self, vector<T> line) {
 
     for (Query<T> query: self->queries) {
         auto endPosition = 0;
+        auto startingPosition = 0;
+        auto direction = 1;
 
-        for (int startPosition = 0; startPosition < line.size(); startPosition++) {
+        if (query.startFromEnd) {
+            direction = -1;
+            startingPosition = line.size() - 1;
+        }
+        for (int startPosition = startingPosition;
+        startPosition < line.size() && startPosition >= 0;
+        startPosition+=direction) {
+
             auto currentQueryCharacter = 0;
             auto currentQuery = 0;
-            auto direction = 1;
             endPosition = query.Match(line, startPosition, currentQueryCharacter, currentQuery, direction);
 
             if (endPosition != -1) {

@@ -18,17 +18,15 @@ using std::vector;
 using std::map;
 
 template <class T>
-class Tally : public map<Tag, unsigned int> {
+class Tally : public map<Tag, int> {
 public:
-    vector<TallyTag<T>*> tagsToTallyWith;
 
     Tally() {
-        tagsToTallyWith = vector<TallyTag<T>*>();
     }
 
-    Tally(const vector<T>&input) {
-        for (const auto* item: tagsToTallyWith) {
-            *this[*item] = item->Tally(input);
+    Tally(vector<TallyTag<T>*> tagsToTallyWith, const vector<T>&input) {
+        for (auto* item: tagsToTallyWith) {
+            (*this)[*item] = item->Tally(input);
         }
     }
 };

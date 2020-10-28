@@ -11,8 +11,12 @@
 template <class T>
 class TallyTag : public Tag {
 public:
-    virtual unsigned int Tally(const vector<T>& raw) {
-        return 0; // Do nothing by default
+    TallyTag(string tag) : Tag(tag) {
+
+    }
+
+    virtual int Tally(const vector<T>& raw) {
+        return -1; // Return a 'fail' (aka -1) by default
     }
 
 };
